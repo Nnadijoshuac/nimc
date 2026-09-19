@@ -6,7 +6,7 @@ import {
   UserCheck,
   Mail,
   Phone,
-} from "lucide-react";
+} from "../icons";
 import {
   DATA_PROTECTION_SECTIONS,
   OFFICE_INFO,
