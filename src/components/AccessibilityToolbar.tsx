@@ -8,7 +8,7 @@ import {
   Check,
   HelpCircle,
   Accessibility as AccessibilityIcon,
-} from "lucide-react";
+} from "./icons";
 import { AccessibilitySettings } from "../types";
 
 interface AccessibilityToolbarProps {
