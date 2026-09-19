@@ -1,0 +1,220 @@
+- generic [ref=e3]:
+  - link "Skip to main content" [ref=e4] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - button "Go to homepage" [ref=e7]:
+        - img "National Identity Management Commission (NIMC) Official Logo" [ref=e8]:
+          - img [ref=e10]:
+            - generic [ref=e21]: NImc
+            - generic [ref=e23]: COMMISSION
+      - generic [ref=e24]:
+        - navigation "Main navigation" [ref=e25]:
+          - button "Home" [ref=e26]
+          - button "Enroll" [ref=e27]
+          - button "Questions" [ref=e28]
+          - button "Privacy" [ref=e29]
+        - button "Open accessibility settings and audio reader" [ref=e32]
+        - link "Call Atlanta office" [ref=e39] [cursor=pointer]:
+          - /url: tel:+1 (404) 563-1228
+        - button "Book visit" [ref=e44]
+  - main [ref=e49]:
+    - generic [ref=e50]:
+      - region [ref=e51]:
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - generic [ref=e54]: Atlanta NIN support center
+            - heading "NIN support in Atlanta, made simple." [level=1] [ref=e56]
+            - paragraph [ref=e57]: Start your pre-enrolment online, visit our Glenlake office for verification and biometrics, and get clear guidance from arrival to slip issuance.
+            - generic [ref=e58]:
+              - button "Start pre-enrolment" [ref=e59]
+              - button "Book visit" [ref=e63]
+              - button "See how it works" [ref=e66]
+          - generic [ref=e69]:
+            - generic [ref=e70]:
+              - img "Modern office building representing the Atlanta NIN enrolment location" [ref=e71]
+              - generic [ref=e73]:
+                - generic [ref=e74]:
+                  - text: One Glenlake Parkway
+                  - heading "Visit Suite 702." [level=2] [ref=e75]
+                  - paragraph [ref=e76]: Atlanta, GA 30328
+                - link "Open map" [ref=e77] [cursor=pointer]:
+                  - /url: https://maps.google.com/?q=1+Glenlake+Parkway+Suite+702+Atlanta+GA+30328
+            - generic [ref=e82]:
+              - generic [ref=e83]:
+                - generic [ref=e84]: Bring
+                - generic [ref=e85]: Passport, payment receipt, and pre-enrolment slip
+              - generic [ref=e86]:
+                - generic [ref=e87]: Hours
+                - generic [ref=e88]: Monday-Friday, 9:00 AM-5:00 PM EST
+              - generic [ref=e89]:
+                - generic [ref=e90]: Parking
+                - generic [ref=e91]: Visitor parking is available on site
+      - region [ref=e92]:
+        - generic [ref=e93]:
+          - generic [ref=e94]:
+            - generic [ref=e95]: Services
+            - heading "Everything for your visit." [level=2] [ref=e96]
+          - paragraph [ref=e97]: Pick the service you need, prepare your documents, and arrive ready for biometric capture.
+        - generic [ref=e98]:
+          - article [ref=e99]:
+            - generic [ref=e100]: "01"
+            - heading "New NIN enrolment" [level=3] [ref=e112]
+            - paragraph [ref=e113]: Complete your first-time diaspora registration with document review, portrait capture, and fingerprints.
+            - button "Start pre-enrolment" [ref=e114]
+          - article [ref=e117]:
+            - generic [ref=e118]: "02"
+            - heading "Children and family visits" [level=3] [ref=e126]
+            - paragraph [ref=e127]: Prepare minors and family groups with the right guardian documents before arriving.
+            - button "Book family visit" [ref=e128]
+          - article [ref=e131]:
+            - generic [ref=e132]: "03"
+            - heading "Slip retrieval" [level=3] [ref=e140]
+            - paragraph [ref=e141]: Get help with existing NIN slip retrieval, reprint, and verification questions.
+            - button "View requirements" [ref=e142]
+      - region [ref=e145]:
+        - generic [ref=e146]:
+          - generic [ref=e147]:
+            - generic [ref=e148]:
+              - generic [ref=e149]: How it works
+              - heading "A clear path from form to slip." [level=2] [ref=e150]
+            - button "Full guide" [ref=e151]
+          - generic [ref=e154]:
+            - generic [ref=e155]:
+              - generic [ref=e156]: Step 1
+              - heading "Pre-Enrollment & Online Payment" [level=3] [ref=e161]
+              - paragraph [ref=e162]: Download official form and make the required online diaspora fee payment.
+            - generic [ref=e163]:
+              - generic [ref=e164]: Step 2
+              - heading "Generate Official Payment Receipt" [level=3] [ref=e169]
+              - paragraph [ref=e170]: Save and print your transaction confirmation receipt.
+            - generic [ref=e171]:
+              - generic [ref=e172]: Step 3
+              - heading "Visit Atlanta Office with Supporting Documents" [level=3] [ref=e177]
+              - paragraph [ref=e178]: Walk into 1 Glenlake Pkwy, Suite 702 with your ID, filled form, and receipt.
+            - generic [ref=e179]:
+              - generic [ref=e180]: Step 4
+              - heading "Enrollment Officer Verification & Data Entry" [level=3] [ref=e185]
+              - paragraph [ref=e186]: Proper verification of records and entry into the NIMC terminal.
+            - generic [ref=e187]:
+              - generic [ref=e188]: Step 5
+              - heading "Biometric Capture & Document Scanning" [level=3] [ref=e193]
+              - paragraph [ref=e194]: Headshot photograph, 10-fingerprints capture, and digital signature.
+            - generic [ref=e195]:
+              - generic [ref=e196]: Step 6
+              - heading "On-the-Spot NIN Issuance & Transaction Slip" [level=3] [ref=e201]
+              - paragraph [ref=e202]: Receive your 11-digit National Identification Number immediately.
+      - region [ref=e203]:
+        - generic [ref=e204]:
+          - generic [ref=e205]: Fees
+          - heading "Know the cost before you come in." [level=2] [ref=e206]
+        - generic [ref=e207]:
+          - generic [ref=e208]:
+            - generic [ref=e209]:
+              - heading "Adult First-Time Enrolment (16+)" [level=3] [ref=e210]
+              - generic [ref=e211]: $50.00
+            - paragraph [ref=e212]: Includes 10-finger biometric capture, facial portrait, and standard official NIN slip issuance.
+          - generic [ref=e213]:
+            - generic [ref=e214]:
+              - heading "Minor & Child Enrolment (0–15)" [level=3] [ref=e215]
+              - generic [ref=e216]: $40.00
+            - paragraph [ref=e217]: Requires verified parent/guardian NIN and birth certificate. Essential for Nigerian passport processing.
+          - generic [ref=e218]:
+            - generic [ref=e219]:
+              - heading "Demographic Data Modification" [level=3] [ref=e220]
+              - generic [ref=e221]: $50.00
+            - paragraph [ref=e222]: Updates to phone numbers, address, marital status, or surname correction with document verification.
+          - generic [ref=e223]:
+            - generic [ref=e224]:
+              - heading "Lost Slip Retrieval & Reprint" [level=3] [ref=e225]
+              - generic [ref=e226]: $20.00
+            - paragraph [ref=e227]: Biometric database lookup against the National Identity Database (NIDB) and immediate slip reprint.
+      - region [ref=e228]:
+        - generic [ref=e229]:
+          - generic [ref=e230]:
+            - generic [ref=e231]: Office visit
+            - heading "Come in prepared. Leave with answers." [level=2] [ref=e232]
+            - paragraph [ref=e233]: The center is near GA-400 and I-285. Bring your completed forms, identification, and payment confirmation.
+            - generic [ref=e234]:
+              - generic [ref=e239]:
+                - generic [ref=e240]: 1 GLENLAKE PARKWAY, SUITE 702
+                - generic [ref=e241]: ATLANTA, 30328, GEORGIA
+              - generic [ref=e246]:
+                - generic [ref=e247]: Monday-Friday, 9:00 AM-5:00 PM EST
+                - generic [ref=e248]: Saturday appointments may be available by prior booking.
+              - generic [ref=e254]:
+                - link "+1 (404) 563-1228" [ref=e255] [cursor=pointer]:
+                  - /url: tel:+1 (404) 563-1228
+                - generic [ref=e256]: info@ninsupportatlanta.com
+            - button "Book office visit" [ref=e257]
+          - generic [ref=e261]:
+            - img "Bright office waiting area for appointment visits" [ref=e262]
+            - generic [ref=e263]:
+              - generic [ref=e264]: Comfortable in-person support
+              - paragraph [ref=e269]: Check in, confirm your documents, complete biometrics, and get help with next steps.
+  - contentinfo [ref=e270]:
+    - generic [ref=e271]:
+      - generic [ref=e272]:
+        - generic [ref=e278]:
+          - generic [ref=e279]: Authorized diaspora identity service center
+          - generic [ref=e280]: NIN enrolment support, biometric capture, slip retrieval, and data protection contact.
+        - generic [ref=e281]:
+          - button "Enrolment guide" [ref=e282]
+          - button "Data protection" [ref=e283]
+      - generic [ref=e284]:
+        - generic [ref=e285]:
+          - img "TasonedHub LLC - Official Licensed NIMC Agent Atlanta" [ref=e287]:
+            - generic [ref=e292]:
+              - generic [ref=e293]: TASONEDHUB
+              - generic [ref=e294]:
+                - generic [ref=e295]: LLC
+                - generic [ref=e296]: • Atlanta Center
+          - paragraph [ref=e297]: Atlanta office support for Nigerian National Identification Number services, including biometric enrolment and NIN slip assistance.
+          - generic [ref=e298]:
+            - img "National Identity Management Commission (NIMC) Official Logo" [ref=e299]:
+              - img [ref=e301]:
+                - generic [ref=e312]: NImc
+                - generic [ref=e314]: COMMISSION
+            - generic [ref=e315]: Service references the NIMC diaspora enrolment process.
+        - generic [ref=e316]:
+          - heading "Site" [level=3] [ref=e317]
+          - list [ref=e318]:
+            - listitem [ref=e319]:
+              - button "Home" [ref=e320]
+            - listitem [ref=e321]:
+              - button "How to enroll" [ref=e322]
+            - listitem [ref=e323]:
+              - button "Questions" [ref=e324]
+            - listitem [ref=e325]:
+              - button "Data protection" [ref=e326]
+            - listitem [ref=e327]:
+              - link "NIMC headquarters" [ref=e328] [cursor=pointer]:
+                - /url: https://www.nimc.gov.ng
+        - generic [ref=e333]:
+          - heading "Atlanta office" [level=3] [ref=e334]
+          - generic [ref=e335]:
+            - generic [ref=e340]:
+              - generic [ref=e341]: 1 GLENLAKE PARKWAY, SUITE 702
+              - generic [ref=e342]: ATLANTA, 30328, GEORGIA
+            - link "info@ninsupportatlanta.com" [ref=e347] [cursor=pointer]:
+              - /url: mailto:info@ninsupportatlanta.com
+            - generic [ref=e351]:
+              - link "+1 (404) 563-1228" [ref=e352] [cursor=pointer]:
+                - /url: tel:+1 (404) 563-1228
+              - link "+1 (678) 508-7689" [ref=e353] [cursor=pointer]:
+                - /url: tel:+1 (678) 508-7689
+        - generic [ref=e354]:
+          - heading "Hours" [level=3] [ref=e355]
+          - generic [ref=e356]:
+            - generic [ref=e361]:
+              - generic [ref=e362]: Monday-Friday
+              - generic [ref=e363]: 9:00 AM-5:00 PM EST
+            - generic [ref=e364]:
+              - generic [ref=e365]: Data Protection Officer
+              - generic [ref=e366]: Mr. Johnson Brendan
+              - generic [ref=e367]: "Effective: January 1, 2023"
+      - generic [ref=e368]:
+        - paragraph [ref=e369]: Copyright 2026 TasonedHub LLC. All rights reserved.
+        - generic [ref=e370]:
+          - button "Privacy and data policy" [ref=e371]
+          - button "Back to top" [ref=e372]
