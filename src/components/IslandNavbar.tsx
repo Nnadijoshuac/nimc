@@ -12,7 +12,7 @@ import {
   HelpCircle,
   Home,
   ChevronRight,
-} from "lucide-react";
+} from "./icons";
 import { OFFICE_INFO } from "../data/websiteContent";
 
 interface IslandNavbarProps {
