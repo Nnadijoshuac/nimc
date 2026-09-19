@@ -8,7 +8,7 @@ import { FaqView } from "./components/views/FaqView";
 import { DataProtectionView } from "./components/views/DataProtectionView";
 import { AppointmentModal } from "./components/AppointmentModal";
 import { PreEnrollmentModal } from "./components/PreEnrollmentModal";
-import { PhoneCall, Calendar, Download } from "lucide-react";
+import { PhoneCall, Calendar, Download } from "./components/icons";
 import { OFFICE_INFO } from "./data/websiteContent";
 
 export default function App() {
