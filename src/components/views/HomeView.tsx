@@ -13,7 +13,7 @@ import {
   Building2,
   Users,
   ShieldCheck,
-} from "lucide-react";
+} from "../icons";
 import {
   ENROLLMENT_STEPS,
   OFFICE_INFO,
