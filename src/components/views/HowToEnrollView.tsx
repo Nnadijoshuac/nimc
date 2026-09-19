@@ -12,7 +12,7 @@ import {
   Calendar,
   ShieldAlert,
   Clock,
-} from "lucide-react";
+} from "../icons";
 import {
   ENROLLMENT_STEPS,
   REQUIRED_DOCUMENTS,
