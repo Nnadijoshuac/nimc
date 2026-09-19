@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Printer, CheckCircle, ShieldCheck, FileText } from "lucide-react";
+import { X, Printer, CheckCircle, ShieldCheck, FileText } from "./icons";
 import { NimcLogo } from "./logos/NimcLogo";
 import { GatewayLogo } from "./logos/GatewayLogo";
 import { OFFICE_INFO } from "../data/websiteContent";
