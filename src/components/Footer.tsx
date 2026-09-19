@@ -11,7 +11,7 @@ import {
   ShieldCheck,
   ArrowUp,
   ExternalLink,
-} from "lucide-react";
+} from "./icons";
 
 interface FooterProps {
   onNavigate: (page: PageId) => void;
