@@ -8,7 +8,7 @@ import {
   ExternalLink,
   Calendar,
   X,
-} from "lucide-react";
+} from "../icons";
 import { FAQ_ITEMS, OFFICE_INFO } from "../../data/websiteContent";
 
 interface FaqViewProps {
