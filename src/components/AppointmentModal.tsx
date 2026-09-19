@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Calendar, MapPin, CheckCircle, ShieldCheck } from "lucide-react";
+import { X, Calendar, MapPin, CheckCircle, ShieldCheck } from "./icons";
 import { OFFICE_INFO } from "../data/websiteContent";
 import { NimcLogo } from "./logos/NimcLogo";
 
