@@ -95,3 +95,44 @@
 .admin-safe-bottom {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem);
 }
+
+/* -----------------------------------------------------------------------------
+   Scrollbars. The public site's beige scrollbar doesn't belong here; this file
+   only ships with the back office, so these rules can be global.
+   ----------------------------------------------------------------------------- */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #b9bfc9 transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #b9bfc9;
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8f97a3;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+/* Sideways-scrolling chip rows: swipeable, no visible bar. A fade on the
+   trailing edge hints that more options are off-screen. */
+.admin-scroll-row {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.admin-scroll-row::-webkit-scrollbar {
+  display: none;
+}
+.admin-fade-end {
+  mask-image: linear-gradient(to right, #000 82%, transparent);
+  -webkit-mask-image: linear-gradient(to right, #000 82%, transparent);
+}

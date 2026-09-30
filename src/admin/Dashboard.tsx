@@ -179,7 +179,7 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
             </div>
           </div>
           <nav
-            className="mx-auto hidden max-w-7xl gap-1 overflow-x-auto px-4 sm:px-6 md:flex"
+            className="admin-scroll-row mx-auto hidden max-w-7xl gap-1 overflow-x-auto px-4 sm:px-6 md:flex"
             aria-label="Sections"
           >
             {TABS.map(([value, label]) => {

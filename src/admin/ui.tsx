@@ -484,7 +484,7 @@ export function Workflow<T extends string>({
       <div
         className={
           mobile
-            ? "-mx-5 flex gap-2 overflow-x-auto px-5 pb-1"
+            ? "admin-scroll-row admin-fade-end -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 pr-10"
             : "flex flex-wrap gap-1.5"
         }
       >

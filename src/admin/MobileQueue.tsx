@@ -160,7 +160,7 @@ function Toolbar<K extends string>({
         </label>
       ) : (
         <div className="flex items-center gap-2">
-          <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto rounded-full">
+          <div className="admin-scroll-row admin-fade-end flex min-w-0 flex-1 gap-2 overflow-x-auto pr-6">
             {chips.map((c) => {
               const on = c.key === chip;
               const n = counts[c.key];
