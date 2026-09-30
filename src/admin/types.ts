@@ -122,6 +122,7 @@ export interface AdminUser {
   user_id: string;
   email: string;
   full_name: string | null;
+  role?: "owner" | "staff";
 }
 
 // ---------------------------------------------------------------------------

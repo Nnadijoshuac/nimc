@@ -125,7 +125,23 @@ npx supabase functions deploy admin-send-email
 are public endpoints that protect themselves, and `admin-send-email` checks the
 caller's session and admin membership itself.
 
-### 6. First admin
+### 6. Team access (after the first admin)
+
+Run `supabase/migrations/20261001000000_team.sql` once in the SQL Editor and
+deploy the `team` function (`npx supabase functions deploy team`). Then, from
+the **Team** tab in the back office:
+
+- **Owners** invite people, approve or decline access requests, change roles
+  and remove access. **Staff** work submissions and unfinished forms.
+- New staff can tap **Request access** on the sign-in page; every owner gets an
+  email and the request appears on the Team tab (also on phones).
+- Whether invited or approved, people receive an email from NIN Support
+  Atlanta and **choose their own password**. Nobody is ever sent one.
+- Removing someone cuts their access immediately and deletes their login.
+  There is always at least one owner, and owners can't remove themselves.
+- Every change is recorded in the Team activity log.
+
+### 6a. First admin
 
 1. **Authentication → Users → Add user → Create new user**, tick *Auto Confirm User*.
 2. SQL Editor:

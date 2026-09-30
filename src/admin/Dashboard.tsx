@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 import { NimcLogo } from "../components/logos/NimcLogo";
-import { CheckCircle, FileText, LogOut } from "../components/icons";
+import { CheckCircle, FileText, LogOut, Users } from "../components/icons";
 import { AdminProvider } from "./context";
 import { OverviewView } from "./OverviewView";
 import { LeadsView } from "./LeadsView";
@@ -10,11 +10,12 @@ import { SubmissionsView } from "./SubmissionsView";
 import { VisitorPanel, VisitorsView } from "./VisitorsView";
 import { SubmissionPanel } from "./SubmissionPanel";
 import { DraftPanel } from "./DraftPanel";
+import { TeamView } from "./TeamView";
 import { MobileLeads, MobileSubmissions } from "./MobileQueue";
 import { useIsMobile } from "./ui";
 import { AdminUser, Draft, KIND_LABEL, Submission, titleCase } from "./types";
 
-type Tab = "overview" | "leads" | "submissions" | "visitors";
+type Tab = "overview" | "leads" | "submissions" | "visitors" | "team";
 type Panel =
   | { type: "submission"; id: string }
   | { type: "draft"; id: string }
@@ -26,6 +27,7 @@ const TABS: [Tab, string][] = [
   ["leads", "Unfinished forms"],
   ["submissions", "Submissions"],
   ["visitors", "Visitors"],
+  ["team", "Team"],
 ];
 
 const db = supabase!;
@@ -35,7 +37,7 @@ const readTab = (): Tab => {
   return TABS.some(([v]) => v === t) ? (t as Tab) : "overview";
 };
 
-const MOBILE_TABS: Tab[] = ["submissions", "leads"];
+const MOBILE_TABS: Tab[] = ["submissions", "leads", "team"];
 
 export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
   const mobile = useIsMobile();
@@ -43,11 +45,18 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
   // On a phone, analytics views are hidden: the phone is for acting on people.
   const tab: Tab =
     mobile && !MOBILE_TABS.includes(tabState) ? "submissions" : tabState;
+  // (Team stays reachable on phones only for owners; see the bottom bar.)
   const [panel, setPanel] = useState<Panel>(null);
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const [toasts, setToasts] = useState<{ id: number; text: string }[]>([]);
-  const [badges, setBadges] = useState({ followUp: 0, newSubs: 0 });
+  const [badges, setBadges] = useState({
+    followUp: 0,
+    newSubs: 0,
+    requests: 0,
+  });
+  const me = admins.find((a) => a.user_id === session.user.id);
+  const isOwner = me?.role === "owner";
 
   const setTab = (next: Tab) => {
     setTabState(next);
@@ -64,7 +73,7 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
 
   const loadBadges = useCallback(async () => {
     const cutoff = new Date(Date.now() - 30 * 60 * 1000).toISOString();
-    const [a, b] = await Promise.all([
+    const [a, b, r] = await Promise.all([
       db
         .from("form_drafts")
         .select("id", { count: "exact", head: true })
@@ -74,13 +83,22 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
         .from("submissions")
         .select("id", { count: "exact", head: true })
         .eq("status", "new"),
+      // Only owners can read requests (RLS); for staff this is simply 0.
+      db
+        .from("access_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending"),
     ]);
-    setBadges({ followUp: a.count ?? 0, newSubs: b.count ?? 0 });
+    setBadges({
+      followUp: a.count ?? 0,
+      newSubs: b.count ?? 0,
+      requests: r.count ?? 0,
+    });
   }, []);
 
   useEffect(() => {
     db.from("admins")
-      .select("user_id, email, full_name")
+      .select("user_id, email, full_name, role")
       .order("email")
       .then(({ data }) => setAdmins((data ?? []) as AdminUser[]));
     loadBadges();
@@ -128,6 +146,15 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
       )
       .on(
         "postgres_changes",
+        { event: "INSERT", schema: "public", table: "access_requests" },
+        (p) => {
+          const r = p.new as { full_name: string };
+          toast(`${r.full_name} asked for back-office access`);
+          bump();
+        },
+      )
+      .on(
+        "postgres_changes",
         { event: "UPDATE", schema: "public", table: "submissions" },
         bump,
       )
@@ -149,7 +176,13 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
   }, [loadBadges]);
 
   const badgeFor = (t: Tab) =>
-    t === "leads" ? badges.followUp : t === "submissions" ? badges.newSubs : 0;
+    t === "leads"
+      ? badges.followUp
+      : t === "submissions"
+        ? badges.newSubs
+        : t === "team"
+          ? badges.requests
+          : 0;
 
   return (
     <AdminProvider session={session} admins={admins} toast={toast}>
@@ -212,16 +245,20 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
 
         {mobile ? (
           <main className="px-4 pb-28">
-            {tab === "submissions" ? (
+            {tab === "submissions" && (
               <MobileSubmissions
                 refreshKey={refreshKey}
                 onOpen={(id) => setPanel({ type: "submission", id })}
               />
-            ) : (
+            )}
+            {tab === "leads" && (
               <MobileLeads
                 refreshKey={refreshKey}
                 onOpen={(id) => setPanel({ type: "draft", id })}
               />
+            )}
+            {tab === "team" && (
+              <TeamView refreshKey={refreshKey} onChanged={changed} />
             )}
           </main>
         ) : (
@@ -249,12 +286,17 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
                 onOpenVisitor={(id) => setPanel({ type: "visitor", id })}
               />
             )}
+            {tab === "team" && (
+              <TeamView refreshKey={refreshKey} onChanged={changed} />
+            )}
           </main>
         )}
 
         {mobile && (
           <nav
-            className="admin-safe-bottom fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-2 bg-white px-3 pt-2 shadow-[0_-8px_20px_-12px_rgba(16,24,40,0.35)]"
+            className={`admin-safe-bottom fixed inset-x-0 bottom-0 z-30 grid gap-1.5 bg-white px-2 pt-1.5 shadow-[0_-8px_20px_-12px_rgba(16,24,40,0.35)] ${
+              isOwner ? "grid-cols-3" : "grid-cols-2"
+            }`}
             aria-label="Sections"
           >
             {(
@@ -267,6 +309,11 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
                   "new",
                 ],
                 ["leads", "Unfinished", FileText, badges.followUp, "to chase"],
+                ...(isOwner
+                  ? ([
+                      ["team", "Team", Users, badges.requests, "waiting"],
+                    ] as const)
+                  : []),
               ] as const
             ).map(([value, label, Icon, count, hint]) => {
               const on = tab === value;
@@ -275,26 +322,26 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
                   key={value}
                   onClick={() => setTab(value)}
                   aria-current={on ? "page" : undefined}
-                  className={`flex items-center justify-center gap-2 rounded-2xl py-3 text-sm font-bold transition ${
-                    on
-                      ? "bg-[#075f3c] text-white"
-                      : "bg-[#eef0f4] text-stone-800"
+                  aria-label={count > 0 ? `${label}, ${count} ${hint}` : label}
+                  className={`flex flex-col items-center justify-center gap-1 rounded-2xl py-2 text-xs font-bold transition ${
+                    on ? "bg-[#075f3c] text-white" : "text-stone-700"
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
+                  <span className="relative">
+                    <Icon className="h-6 w-6" />
+                    {count > 0 && (
+                      <span
+                        className={`absolute -right-3 -top-1.5 min-w-[1.25rem] rounded-full px-1.5 text-center text-[11px] leading-5 tabular-nums ${
+                          on
+                            ? "bg-white text-[#075f3c]"
+                            : "bg-amber-400 text-stone-950"
+                        }`}
+                      >
+                        {count}
+                      </span>
+                    )}
+                  </span>
                   {label}
-                  {count > 0 && (
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[11px] tabular-nums ${
-                        on
-                          ? "bg-white/25 text-white"
-                          : "bg-amber-400 text-stone-950"
-                      }`}
-                      aria-label={`${count} ${hint}`}
-                    >
-                      {count}
-                    </span>
-                  )}
                 </button>
               );
             })}

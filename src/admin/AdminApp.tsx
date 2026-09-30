@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 import { NimcLogo } from "../components/logos/NimcLogo";
-import { Alert, Lock, Mail } from "../components/icons";
+import { Alert, CheckCircle, Lock, Mail, Users } from "../components/icons";
 import { Spinner } from "../components/FormBits";
 import { Dashboard } from "./Dashboard";
 
@@ -62,6 +62,26 @@ export default function AdminApp() {
     );
   }
 
+  const needsPassword =
+    gate === "admin" && session?.user.user_metadata?.needs_password === true;
+  if (needsPassword && session) {
+    return (
+      <Shell>
+        <SetPassword
+          welcomeName={
+            (session.user.user_metadata?.full_name as string | undefined) ??
+            null
+          }
+          onDone={() => {
+            supabase!.functions
+              .invoke("team", { body: { action: "joined" } })
+              .catch(() => undefined);
+          }}
+        />
+      </Shell>
+    );
+  }
+
   if (gate === "loading") {
     return (
       <Shell>
@@ -86,12 +106,15 @@ export default function AdminApp() {
       <Shell>
         <Notice title="No admin access">
           You are signed in as <strong>{session?.user.email}</strong>, but this
-          account has not been added to the admin team. Ask an existing admin to
-          add you.
+          account is not on the team. Request access and an owner will review
+          it.
         </Notice>
+        <div className="mt-4">
+          <RequestAccess initialEmail={session?.user.email ?? ""} />
+        </div>
         <button
           onClick={() => supabase!.auth.signOut()}
-          className="btn-secondary mt-4 w-full py-2.5 text-xs"
+          className="btn-secondary mt-3 w-full py-2.5 text-xs"
         >
           Sign out
         </button>
@@ -133,6 +156,24 @@ const Notice: React.FC<{ title: string; children: React.ReactNode }> = ({
 );
 
 function SignIn() {
+  const [requesting, setRequesting] = useState(false);
+  if (requesting) {
+    return (
+      <div className="space-y-4">
+        <RequestAccess />
+        <button
+          onClick={() => setRequesting(false)}
+          className="w-full text-center text-xs font-semibold text-[#075f3c] hover:underline"
+        >
+          Back to sign in
+        </button>
+      </div>
+    );
+  }
+  return <SignInForm onRequest={() => setRequesting(true)} />;
+}
+
+function SignInForm({ onRequest }: { onRequest: () => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState<"password" | "link" | null>(null);
@@ -259,11 +300,138 @@ function SignIn() {
           Forgot password?
         </button>
       </div>
+
+      <div className="rounded-xl bg-[#eef0f4] p-3 text-center text-xs text-stone-700">
+        New to the team?{" "}
+        <button
+          type="button"
+          onClick={onRequest}
+          className="font-bold text-[#075f3c] hover:underline"
+        >
+          Request access
+        </button>
+      </div>
     </form>
   );
 }
 
-function SetPassword({ onDone }: { onDone: () => void }) {
+function RequestAccess({ initialEmail = "" }: { initialEmail?: string }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState(initialEmail);
+  const [note, setNote] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setBusy(true);
+    setError(null);
+    const { error } = await supabase!.functions.invoke("team", {
+      body: { action: "request_access", name, email, note, company: honeypot },
+    });
+    setBusy(false);
+    if (error) {
+      const detail = await (error as { context?: Response }).context
+        ?.json()
+        .catch(() => null);
+      setError(detail?.error ?? "Couldn't send your request. Try again.");
+      return;
+    }
+    setSent(true);
+  };
+
+  if (sent) {
+    return (
+      <div className="space-y-2 text-center">
+        <CheckCircle className="mx-auto h-8 w-8 text-[#0a7a4b]" />
+        <p className="text-sm font-bold text-stone-950">Request sent</p>
+        <p className="text-xs leading-6 text-stone-600">
+          An owner will review it. If you're approved, you'll get an email at{" "}
+          <strong>{email}</strong> to choose your password and sign in.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className="space-y-4">
+      <div className="flex items-center gap-2 text-sm font-bold text-stone-950">
+        <Users className="h-4 w-4 text-[#075f3c]" />
+        Request access
+      </div>
+      <label className="block text-xs font-bold text-stone-700">
+        Full name
+        <input
+          required
+          maxLength={80}
+          autoComplete="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="field-control mt-1 px-3 py-2 text-sm"
+        />
+      </label>
+      <label className="block text-xs font-bold text-stone-700">
+        Email
+        <input
+          type="email"
+          required
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="field-control mt-1 px-3 py-2 text-sm"
+        />
+      </label>
+      <label className="block text-xs font-bold text-stone-700">
+        Who are you?{" "}
+        <span className="font-normal text-stone-500">
+          (helps the owner recognise you)
+        </span>
+        <input
+          maxLength={300}
+          placeholder="e.g. Front desk, started Monday"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          className="field-control mt-1 px-3 py-2 text-sm"
+        />
+      </label>
+      <input
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        value={honeypot}
+        onChange={(e) => setHoneypot(e.target.value)}
+        className="absolute -left-[9999px] h-0 w-0 opacity-0"
+      />
+      {error && (
+        <p role="alert" className="text-xs text-[#b4232a]">
+          {error}
+        </p>
+      )}
+      <button
+        type="submit"
+        disabled={busy}
+        className="btn-primary w-full py-2.5 text-xs disabled:opacity-70"
+      >
+        {busy && <Spinner />}
+        Send request
+      </button>
+      <p className="text-center text-[11px] leading-5 text-stone-500">
+        You'll never be sent a password. If approved, you choose your own.
+      </p>
+    </form>
+  );
+}
+
+function SetPassword({
+  onDone,
+  welcomeName = null,
+}: {
+  onDone: () => void;
+  welcomeName?: string | null;
+}) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -272,7 +440,10 @@ function SetPassword({ onDone }: { onDone: () => void }) {
     event.preventDefault();
     setBusy(true);
     setError(null);
-    const { error } = await supabase!.auth.updateUser({ password });
+    const { error } = await supabase!.auth.updateUser({
+      password,
+      data: { needs_password: false },
+    });
     setBusy(false);
     if (error) setError(error.message);
     else onDone();
@@ -280,7 +451,20 @@ function SetPassword({ onDone }: { onDone: () => void }) {
 
   return (
     <form onSubmit={save} className="space-y-4">
-      <p className="text-sm font-bold text-stone-950">Choose a new password</p>
+      {welcomeName !== undefined && welcomeName !== null ? (
+        <div>
+          <p className="text-base font-bold text-stone-950">
+            Welcome, {welcomeName.split(" ")[0]}
+          </p>
+          <p className="mt-1 text-xs leading-5 text-stone-600">
+            Choose the password you'll use to sign in. Only you will know it.
+          </p>
+        </div>
+      ) : (
+        <p className="text-sm font-bold text-stone-950">
+          Choose a new password
+        </p>
+      )}
       <input
         type="password"
         required
@@ -298,7 +482,7 @@ function SetPassword({ onDone }: { onDone: () => void }) {
         className="btn-primary w-full py-2.5 text-xs"
       >
         {busy && <Spinner />}
-        Save password
+        {welcomeName ? "Set password and continue" : "Save password"}
       </button>
     </form>
   );

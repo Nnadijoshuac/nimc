@@ -19,3 +19,8 @@ verify_jwt = false
 [functions.save-draft]
 # Public: saves partially filled forms and loads them for resume links.
 verify_jwt = false
+
+[functions.team]
+# Mixed: request_access is public; every other action checks the caller's
+# admin session and role itself.
+verify_jwt = false

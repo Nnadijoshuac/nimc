@@ -49,8 +49,12 @@
   background: var(--admin-well);
   color: #111418;
 }
+.admin-app .field-control {
+  font-weight: 500;
+}
 .admin-app .field-control::placeholder {
   color: var(--admin-subtle);
+  font-weight: 400;
 }
 .admin-app .field-control:focus {
   background: #ffffff;

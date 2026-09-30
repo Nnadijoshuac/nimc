@@ -295,3 +295,69 @@ export function staffMessageEmail(opts: {
     ].join("\n"),
   };
 }
+
+// ---------------------------------------------------------------------------
+// Team emails
+// ---------------------------------------------------------------------------
+
+function button(href: string, label: string) {
+  return `<a href="${escapeHtml(href)}" style="display:inline-block;background:#075f3c;color:#ffffff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 22px;border-radius:999px">${escapeHtml(label)}</a>`;
+}
+
+export function teamInviteEmail(opts: {
+  name: string;
+  inviterName: string;
+  role: "owner" | "staff";
+  link: string;
+}) {
+  const roleLine =
+    opts.role === "owner"
+      ? "As an owner you can also invite and manage team members."
+      : "You'll be able to see new submissions and follow up with applicants.";
+  return {
+    subject: "You're invited to the NIN Support Atlanta back office",
+    html: layout({
+      preheader: `${opts.inviterName} invited you to the NIN Support Atlanta back office.`,
+      heading: `Welcome to the team, ${opts.name}`,
+      body: `
+        <p style="margin:0 0 12px">${escapeHtml(opts.inviterName)} has given you access to the NIN Support Atlanta back office. ${escapeHtml(roleLine)}</p>
+        <p style="margin:0 0 20px">Click below to choose your password and sign in. Nobody else will ever know it.</p>
+        <p style="margin:0 0 20px">${button(opts.link, "Accept invite and set password")}</p>
+        <p style="margin:0;font-size:12px;color:#6e6e73">This link works once and expires in 24 hours. If you weren't expecting this, you can ignore it.</p>`,
+    }),
+    text: [
+      `Welcome to the team, ${opts.name}.`,
+      "",
+      `${opts.inviterName} has given you access to the NIN Support Atlanta back office. ${roleLine}`,
+      "",
+      "Choose your password and sign in here (works once, expires in 24 hours):",
+      opts.link,
+    ].join("\n"),
+  };
+}
+
+export function accessRequestEmail(opts: {
+  name: string;
+  email: string;
+  note: string | null;
+  teamUrl: string;
+}) {
+  return {
+    subject: `Access request: ${opts.name}`,
+    html: layout({
+      preheader: `${opts.name} (${opts.email}) asked for back-office access.`,
+      heading: "Someone asked to join the back office",
+      body: `
+        <p style="margin:0 0 12px"><strong>${escapeHtml(opts.name)}</strong> (${escapeHtml(opts.email)}) is asking for access.</p>
+        ${opts.note ? `<p style="margin:0 0 16px;padding:12px 14px;background:#f5f5f7;border-radius:8px">“${escapeHtml(opts.note)}”</p>` : ""}
+        <p style="margin:0 0 20px">${button(opts.teamUrl, "Review request")}</p>
+        <p style="margin:0;font-size:12px;color:#6e6e73">Only approve people you know. If you don't recognise this request, decline it.</p>`,
+    }),
+    text: [
+      `${opts.name} (${opts.email}) is asking for back-office access.`,
+      opts.note ? `Note: ${opts.note}` : "",
+      "",
+      `Review it: ${opts.teamUrl}`,
+    ].join("\n"),
+  };
+}
