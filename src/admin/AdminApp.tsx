@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import type { Session } from "@supabase/supabase-js";
+import type { EmailOtpType, Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 import { NinSupportLogo } from "../components/logos/NinSupportLogo";
 import { Alert, CheckCircle, Lock, Mail, Users } from "../components/icons";
@@ -17,16 +17,52 @@ export default function AdminApp() {
   const [session, setSession] = useState<Session | null>(null);
   const [gate, setGate] = useState<Gate>("loading");
   const [recovering, setRecovering] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = "Admin · NIN Support Atlanta";
     if (!supabase) return;
 
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((event, next) => {
       if (event === "PASSWORD_RECOVERY") setRecovering(true);
       setSession(next);
     });
+
+    const url = new URL(window.location.href);
+    if (url.pathname === "/auth/confirm") {
+      const tokenHash = url.searchParams.get("token_hash");
+      const type = parseEmailOtpType(url.searchParams.get("type"));
+      if (!tokenHash || !type) {
+        setAuthError(
+          "That sign-in link is missing information. Ask for a new invite.",
+        );
+        setSession(null);
+        setGate("signed-out");
+      } else {
+        supabase.auth
+          .verifyOtp({ token_hash: tokenHash, type })
+          .then(({ data, error }) => {
+            if (error) {
+              setAuthError(
+                "That invite link is invalid or expired. Ask an owner to send a fresh invite.",
+              );
+              setSession(null);
+              setGate("signed-out");
+              return;
+            }
+            if (type === "recovery") setRecovering(true);
+            setSession(data.session);
+            window.history.replaceState(
+              {},
+              document.title,
+              sameOriginPath(url.searchParams.get("next")),
+            );
+          });
+      }
+    } else {
+      supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    }
+
     return () => sub.subscription.unsubscribe();
   }, []);
 
@@ -96,6 +132,11 @@ export default function AdminApp() {
   if (gate === "signed-out") {
     return (
       <Shell>
+        {authError && (
+          <div className="mb-4">
+            <Notice title="Invite link problem">{authError}</Notice>
+          </div>
+        )}
         <SignIn />
       </Shell>
     );
@@ -123,6 +164,31 @@ export default function AdminApp() {
   }
 
   return <Dashboard session={session!} />;
+}
+
+const emailOtpTypes = new Set([
+  "signup",
+  "invite",
+  "magiclink",
+  "recovery",
+  "email",
+  "email_change",
+]);
+
+function parseEmailOtpType(value: string | null): EmailOtpType | null {
+  return value && emailOtpTypes.has(value) ? (value as EmailOtpType) : null;
+}
+
+function sameOriginPath(value: string | null) {
+  if (!value) return "/";
+  try {
+    const url = new URL(value, window.location.origin);
+    return url.origin === window.location.origin
+      ? `${url.pathname}${url.search}${url.hash}`
+      : "/";
+  } catch {
+    return "/";
+  }
 }
 
 const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => (

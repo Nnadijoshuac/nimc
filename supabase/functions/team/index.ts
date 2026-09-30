@@ -92,6 +92,23 @@ async function ownerCount() {
   return count ?? 0;
 }
 
+function authConfirmLink(
+  properties: Record<string, unknown>,
+  type: "invite" | "magiclink",
+) {
+  const actionLink = properties.action_link;
+  const tokenHash = properties.hashed_token;
+  if (typeof tokenHash !== "string" || !tokenHash) {
+    return typeof actionLink === "string" ? actionLink : `${ADMIN_URL}/`;
+  }
+
+  const url = new URL("/auth/confirm", `${ADMIN_URL}/`);
+  url.searchParams.set("token_hash", tokenHash);
+  url.searchParams.set("type", type);
+  url.searchParams.set("next", `${ADMIN_URL}/`);
+  return url.toString();
+}
+
 /**
  * Creates (or reuses) the login for `email`, makes it an admin with `role`,
  * and emails a one-time link where they choose their own password.
@@ -130,6 +147,14 @@ async function inviteMember(
     console.error("generateLink failed", link.error);
     throw new HttpError(500, "Couldn't create the invite. Try again.");
   }
+  const inviteType =
+    link.data.properties.verification_type === "magiclink"
+      ? "magiclink"
+      : "invite";
+  const inviteUrl = authConfirmLink(
+    link.data.properties as Record<string, unknown>,
+    inviteType,
+  );
 
   const { error: adminError } = await db.from("admins").insert({
     user_id: link.data.user.id,
@@ -147,7 +172,7 @@ async function inviteMember(
     name,
     inviterName: actor.full_name || actor.email,
     role,
-    link: link.data.properties.action_link,
+    link: inviteUrl,
   });
   const sent = await sendEmail({ to: email, ...mail });
   if (!sent.ok) {
