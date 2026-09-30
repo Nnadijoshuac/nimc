@@ -103,7 +103,7 @@ export default function AdminApp() {
 }
 
 const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="flex min-h-screen items-center justify-center bg-[#f5f5f7] px-4 py-10">
+  <div className="admin-app flex min-h-screen items-center justify-center px-4 py-10">
     <div className="paper-panel w-full max-w-sm p-6">
       <div className="mb-6 flex items-center gap-3">
         <NimcLogo size="sm" showSubtitle={false} />
@@ -123,7 +123,7 @@ const Notice: React.FC<{ title: string; children: React.ReactNode }> = ({
   title,
   children,
 }) => (
-  <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-xs leading-6 text-amber-950">
+  <div className="rounded-lg bg-amber-100 p-4 text-xs leading-6 text-amber-950">
     <div className="mb-1 flex items-center gap-2 text-sm font-bold">
       <Alert className="h-4 w-4" />
       {title}

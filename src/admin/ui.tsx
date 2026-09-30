@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FunctionsHttpError } from "@supabase/supabase-js";
 import {
+  ArrowRight,
   Calendar,
   Check,
+  ChevronDown,
   Copy,
   FileText,
   Mail,
@@ -25,6 +27,27 @@ import {
 } from "./types";
 
 // ---------------------------------------------------------------------------
+// Layout mode
+// ---------------------------------------------------------------------------
+
+const MOBILE_QUERY = "(max-width: 767px)";
+
+/** Phones get the "on the move" layout; tablets and desktops the full one. */
+export function useIsMobile() {
+  const [mobile, setMobile] = useState(
+    () =>
+      typeof window !== "undefined" && window.matchMedia(MOBILE_QUERY).matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_QUERY);
+    const on = () => setMobile(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return mobile;
+}
+
+// ---------------------------------------------------------------------------
 // Small pieces
 // ---------------------------------------------------------------------------
 
@@ -32,7 +55,7 @@ export const StatusPill: React.FC<{ status: string }> = ({ status }) => {
   const meta = statusMeta(status);
   return (
     <span
-      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${meta.pill}`}
+      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-semibold ${meta.pill}`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />
       {meta.label}
@@ -68,7 +91,9 @@ export const Field: React.FC<{
   value: React.ReactNode;
   wide?: boolean;
 }> = ({ label, value, wide }) => (
-  <div className={`bg-white px-3 py-2.5 ${wide ? "col-span-2" : ""}`}>
+  <div
+    className={`rounded-lg bg-[#eef0f4] px-3 py-2.5 ${wide ? "col-span-2" : ""}`}
+  >
     <dt className="text-[10px] font-semibold uppercase tracking-[0.06em] text-stone-500">
       {label}
     </dt>
@@ -78,11 +103,7 @@ export const Field: React.FC<{
 
 export const FieldGrid: React.FC<{ children: React.ReactNode }> = ({
   children,
-}) => (
-  <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-[#eeeeef] bg-[#eeeeef] text-sm">
-    {children}
-  </dl>
-);
+}) => <dl className="grid grid-cols-2 gap-2 text-sm">{children}</dl>;
 
 export const EmptyState: React.FC<{ title: string; body: string }> = ({
   title,
@@ -133,10 +154,17 @@ export const Drawer: React.FC<{
   children: React.ReactNode;
   wide?: boolean;
 }> = ({ label, onClose, header, children, wide }) => {
+  const mobile = useIsMobile();
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    // Keep the page behind from scrolling while the sheet is open.
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
   }, [onClose]);
 
   return (
@@ -147,28 +175,65 @@ export const Drawer: React.FC<{
       aria-label={label}
     >
       <button
-        className="absolute inset-0 bg-stone-950/30"
+        className="absolute inset-0 bg-stone-950/40"
         onClick={onClose}
         aria-label="Close"
       />
       <aside
-        className={`relative flex h-full w-full ${wide ? "max-w-2xl" : "max-w-xl"} flex-col bg-white shadow-2xl`}
+        className={`relative flex h-full w-full ${wide ? "md:max-w-2xl" : "md:max-w-xl"} flex-col bg-white shadow-2xl`}
       >
-        <div className="flex items-start justify-between gap-3 border-b border-[#eeeeef] px-5 py-4">
+        {mobile && (
+          <div className="flex items-center bg-white px-2 pt-2">
+            <button
+              onClick={onClose}
+              className="inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold text-[#075f3c]"
+            >
+              <ArrowRight className="h-4 w-4 rotate-180" />
+              Back
+            </button>
+          </div>
+        )}
+        <div className="relative z-10 flex items-start justify-between gap-3 bg-white px-5 pb-4 pt-2 shadow-[0_8px_14px_-12px_rgba(16,24,40,0.35)] md:pt-4">
           <div className="min-w-0 flex-1">{header}</div>
-          <button
-            onClick={onClose}
-            className="rounded-full p-2 text-stone-500 hover:bg-[#f5f5f7]"
-            aria-label="Close"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          {!mobile && (
+            <button
+              onClick={onClose}
+              className="rounded-full p-2 text-stone-500 hover:bg-[#f5f5f7]"
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          )}
         </div>
-        <div className="flex-1 space-y-6 overflow-y-auto px-5 py-5">
+        <div className="admin-safe-bottom flex-1 space-y-6 overflow-y-auto px-5 py-5">
           {children}
         </div>
       </aside>
     </div>
+  );
+};
+
+/** On phones, secondary content sits behind a "Show more" toggle. */
+export const MoreSection: React.FC<{
+  label: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}> = ({ label, children, defaultOpen = false }) => {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between rounded-xl bg-[#eef0f4] px-4 py-3 text-sm font-semibold text-stone-800"
+      >
+        {label}
+        <ChevronDown
+          className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && <div className="mt-4 space-y-6">{children}</div>}
+    </section>
   );
 };
 
@@ -184,17 +249,20 @@ export const ContactActions: React.FC<{
   onEmail: () => void;
   onContacted?: (channel: string) => void;
 }> = ({ phone, email, whatsapp, chatMessage, onEmail, onContacted }) => {
-  const btn =
-    "btn-secondary flex-col gap-1 py-3 text-[11px] aria-disabled:pointer-events-none aria-disabled:opacity-40";
+  const base =
+    "flex flex-col items-center justify-center gap-1 rounded-xl py-3 text-xs font-semibold transition aria-disabled:pointer-events-none aria-disabled:opacity-40 disabled:opacity-40 md:text-[11px]";
+  const tonal = `${base} bg-[#eef0f4] text-stone-900 hover:bg-[#e2e6ec]`;
+  const green = `${base} bg-[#075f3c] text-white hover:bg-[#064f32]`;
+  // The channel they told us they use gets the solid green button.
   return (
     <div className="grid grid-cols-4 gap-2">
       <a
         href={phone ? `tel:${phone}` : undefined}
         aria-disabled={!phone}
-        className={btn}
+        className={whatsapp ? tonal : green}
         onClick={() => onContacted?.("call")}
       >
-        <Phone className="h-4 w-4" />
+        <Phone className="h-5 w-5 md:h-4 md:w-4" />
         Call
       </a>
       <a
@@ -202,29 +270,29 @@ export const ContactActions: React.FC<{
         target="_blank"
         rel="noreferrer"
         aria-disabled={!phone}
-        className={`${btn} ${whatsapp ? "ring-2 ring-emerald-400/60" : ""}`}
+        className={whatsapp ? green : tonal}
         title={whatsapp ? "They said this number is on WhatsApp" : undefined}
         onClick={() => onContacted?.("WhatsApp")}
       >
-        <WhatsApp className="h-4 w-4" />
+        <WhatsApp className="h-5 w-5 md:h-4 md:w-4" />
         WhatsApp
       </a>
       <a
         href={phone ? smsLink(phone, chatMessage) : undefined}
         aria-disabled={!phone}
-        className={btn}
+        className={tonal}
         onClick={() => onContacted?.("text message")}
       >
-        <Note className="h-4 w-4" />
+        <Note className="h-5 w-5 md:h-4 md:w-4" />
         Text
       </a>
       <button
         type="button"
         onClick={onEmail}
         disabled={!email}
-        className={`${btn} disabled:opacity-40`}
+        className={tonal}
       >
-        <Mail className="h-4 w-4" />
+        <Mail className="h-5 w-5 md:h-4 md:w-4" />
         Email
       </button>
     </div>
@@ -347,7 +415,7 @@ export const Composer: React.FC<{
                   setSubject(t.subject);
                   setMessage(t.message);
                 }}
-                className="rounded-full border border-[#e5e5ea] px-2.5 py-1 text-[11px] font-semibold text-stone-600 hover:bg-[#f5f5f7]"
+                className="rounded-full bg-[#eef0f4] px-3 py-1.5 text-xs font-semibold text-stone-800 hover:bg-[#e2e6ec] md:px-2.5 md:py-1 md:text-[11px]"
               >
                 {t.label}
               </button>
@@ -360,7 +428,7 @@ export const Composer: React.FC<{
             maxLength={150}
             className="field-control px-3 py-2 text-sm"
           />
-          <div className="rounded-lg border border-[#e5e5ea] bg-[#fbfbfd] px-3 pt-2 text-sm text-stone-500">
+          <div className="rounded-lg bg-[#eef0f4] px-3 pt-2 text-sm text-stone-500">
             Hello {greetingName || "there"},
             <textarea
               rows={8}
@@ -371,14 +439,14 @@ export const Composer: React.FC<{
               className="mt-1 block w-full resize-y border-0 bg-transparent p-0 pb-2 text-sm text-stone-900 outline-none"
             />
           </div>
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-col-reverse gap-2 md:flex-row md:items-center md:justify-between">
             <span className="text-[11px] text-stone-500">
               To {email} · replies go to the office inbox
             </span>
             <button
               onClick={sendEmail}
               disabled={busy || !subject.trim() || !message.trim()}
-              className="btn-primary px-4 py-2 text-xs disabled:opacity-50"
+              className="btn-primary w-full whitespace-nowrap px-4 py-3 text-sm disabled:opacity-50 md:w-auto md:py-2 md:text-xs"
             >
               {busy ? <Spinner /> : <Send className="h-3.5 w-3.5" />}
               Send email
@@ -407,44 +475,73 @@ export function Workflow<T extends string>({
   onChange: (patch: { status?: T; assigned_to?: string | null }) => void;
   saving: boolean;
 }) {
-  const { admins, session } = useAdmin();
+  const { admins, session, adminName } = useAdmin();
+  const mobile = useIsMobile();
+  const mine = assignedTo === session.user.id;
   return (
     <section>
       <SectionTitle>Status</SectionTitle>
-      <div className="flex flex-wrap gap-1.5">
+      <div
+        className={
+          mobile
+            ? "-mx-5 flex gap-2 overflow-x-auto px-5 pb-1"
+            : "flex flex-wrap gap-1.5"
+        }
+      >
         {statuses.map((s) => (
           <button
             key={s.value}
             disabled={saving}
             onClick={() => onChange({ status: s.value })}
-            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+            aria-pressed={status === s.value}
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition md:px-3 md:py-1.5 ${
               status === s.value
-                ? s.pill
-                : "border-[#e5e5ea] text-stone-600 hover:bg-[#f5f5f7]"
+                ? `${s.pill} shadow-sm`
+                : "bg-[#eef0f4] text-stone-700 hover:bg-[#e2e6ec]"
             }`}
           >
             <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
             {s.label}
+            {status === s.value && <Check className="h-3 w-3" />}
           </button>
         ))}
       </div>
-      <label className="mt-3 flex items-center gap-2 text-xs text-stone-600">
-        Assigned to
-        <select
-          value={assignedTo ?? ""}
-          disabled={saving}
-          onChange={(e) => onChange({ assigned_to: e.target.value || null })}
-          className="field-control w-auto px-2 py-1 text-xs"
-        >
-          <option value="">Unassigned</option>
-          {admins.map((a) => (
-            <option key={a.user_id} value={a.user_id}>
-              {a.full_name || a.email}
-              {a.user_id === session.user.id ? " (me)" : ""}
-            </option>
-          ))}
-        </select>
-      </label>
+      {mobile ? (
+        <div className="mt-3 flex items-center justify-between gap-2 text-xs text-stone-600">
+          <span>
+            {assignedTo
+              ? `Assigned to ${mine ? "you" : adminName(assignedTo)}`
+              : "Unassigned"}
+          </span>
+          <button
+            disabled={saving}
+            onClick={() =>
+              onChange({ assigned_to: mine ? null : session.user.id })
+            }
+            className="rounded-full bg-[#eef0f4] px-3 py-1.5 font-semibold text-stone-800"
+          >
+            {mine ? "Unassign me" : "Assign to me"}
+          </button>
+        </div>
+      ) : (
+        <label className="mt-3 flex items-center gap-2 text-xs text-stone-600">
+          Assigned to
+          <select
+            value={assignedTo ?? ""}
+            disabled={saving}
+            onChange={(e) => onChange({ assigned_to: e.target.value || null })}
+            className="field-control w-auto px-2 py-1 text-xs"
+          >
+            <option value="">Unassigned</option>
+            {admins.map((a) => (
+              <option key={a.user_id} value={a.user_id}>
+                {a.full_name || a.email}
+                {a.user_id === session.user.id ? " (me)" : ""}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
     </section>
   );
 }

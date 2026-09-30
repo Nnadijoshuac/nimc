@@ -113,7 +113,7 @@ export const LeadsView: React.FC<{
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-4 text-xs leading-5 text-amber-950">
+      <div className="rounded-xl bg-amber-100 p-4 text-xs leading-5 text-amber-950 shadow-sm">
         <strong>People who started a form and stopped.</strong> Their contact
         details were saved the moment they typed them. Reach out by name, and
         send their resume link so they can finish where they left off.

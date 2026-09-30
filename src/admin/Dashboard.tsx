@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 import { NimcLogo } from "../components/logos/NimcLogo";
-import { LogOut } from "../components/icons";
+import { CheckCircle, FileText, LogOut } from "../components/icons";
 import { AdminProvider } from "./context";
 import { OverviewView } from "./OverviewView";
 import { LeadsView } from "./LeadsView";
@@ -10,6 +10,8 @@ import { SubmissionsView } from "./SubmissionsView";
 import { VisitorPanel, VisitorsView } from "./VisitorsView";
 import { SubmissionPanel } from "./SubmissionPanel";
 import { DraftPanel } from "./DraftPanel";
+import { MobileLeads, MobileSubmissions } from "./MobileQueue";
+import { useIsMobile } from "./ui";
 import { AdminUser, Draft, KIND_LABEL, Submission, titleCase } from "./types";
 
 type Tab = "overview" | "leads" | "submissions" | "visitors";
@@ -33,8 +35,14 @@ const readTab = (): Tab => {
   return TABS.some(([v]) => v === t) ? (t as Tab) : "overview";
 };
 
+const MOBILE_TABS: Tab[] = ["submissions", "leads"];
+
 export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
-  const [tab, setTabState] = useState<Tab>(readTab);
+  const mobile = useIsMobile();
+  const [tabState, setTabState] = useState<Tab>(readTab);
+  // On a phone, analytics views are hidden: the phone is for acting on people.
+  const tab: Tab =
+    mobile && !MOBILE_TABS.includes(tabState) ? "submissions" : tabState;
   const [panel, setPanel] = useState<Panel>(null);
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -145,14 +153,14 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
 
   return (
     <AdminProvider session={session} admins={admins} toast={toast}>
-      <div className="min-h-screen bg-[#f5f5f7] text-stone-950">
-        <header className="sticky top-0 z-30 border-b border-[#e5e5ea] bg-white/90 backdrop-blur-md">
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 pt-3 sm:px-6">
+      <div className="admin-app min-h-screen text-stone-950">
+        <header className="sticky top-0 z-30 bg-white/95 shadow-[0_1px_0_rgba(16,24,40,0.06),0_6px_16px_-10px_rgba(16,24,40,0.25)] backdrop-blur-md">
+          <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 md:h-auto md:pt-3">
             <div className="flex items-center gap-3">
               <NimcLogo size="sm" showSubtitle={false} />
               <div>
                 <div className="text-sm font-bold">NIN Support back office</div>
-                <div className="text-xs text-stone-500">
+                <div className="hidden text-xs text-stone-500 md:block">
                   Atlanta enrolment centre
                 </div>
               </div>
@@ -171,7 +179,7 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
             </div>
           </div>
           <nav
-            className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 sm:px-6"
+            className="mx-auto hidden max-w-7xl gap-1 overflow-x-auto px-4 sm:px-6 md:flex"
             aria-label="Sections"
           >
             {TABS.map(([value, label]) => {
@@ -202,31 +210,96 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
           </nav>
         </header>
 
-        <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-          {tab === "overview" && (
-            <OverviewView refreshKey={refreshKey} onGo={setTab} />
-          )}
-          {tab === "leads" && (
-            <LeadsView
-              refreshKey={refreshKey}
-              selectedId={panel?.type === "draft" ? panel.id : null}
-              onOpen={(id) => setPanel({ type: "draft", id })}
-            />
-          )}
-          {tab === "submissions" && (
-            <SubmissionsView
-              refreshKey={refreshKey}
-              selectedId={panel?.type === "submission" ? panel.id : null}
-              onOpen={(id) => setPanel({ type: "submission", id })}
-            />
-          )}
-          {tab === "visitors" && (
-            <VisitorsView
-              refreshKey={refreshKey}
-              onOpenVisitor={(id) => setPanel({ type: "visitor", id })}
-            />
-          )}
-        </main>
+        {mobile ? (
+          <main className="px-4 pb-28">
+            {tab === "submissions" ? (
+              <MobileSubmissions
+                refreshKey={refreshKey}
+                onOpen={(id) => setPanel({ type: "submission", id })}
+              />
+            ) : (
+              <MobileLeads
+                refreshKey={refreshKey}
+                onOpen={(id) => setPanel({ type: "draft", id })}
+              />
+            )}
+          </main>
+        ) : (
+          <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+            {tab === "overview" && (
+              <OverviewView refreshKey={refreshKey} onGo={setTab} />
+            )}
+            {tab === "leads" && (
+              <LeadsView
+                refreshKey={refreshKey}
+                selectedId={panel?.type === "draft" ? panel.id : null}
+                onOpen={(id) => setPanel({ type: "draft", id })}
+              />
+            )}
+            {tab === "submissions" && (
+              <SubmissionsView
+                refreshKey={refreshKey}
+                selectedId={panel?.type === "submission" ? panel.id : null}
+                onOpen={(id) => setPanel({ type: "submission", id })}
+              />
+            )}
+            {tab === "visitors" && (
+              <VisitorsView
+                refreshKey={refreshKey}
+                onOpenVisitor={(id) => setPanel({ type: "visitor", id })}
+              />
+            )}
+          </main>
+        )}
+
+        {mobile && (
+          <nav
+            className="admin-safe-bottom fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-2 bg-white px-3 pt-2 shadow-[0_-8px_20px_-12px_rgba(16,24,40,0.35)]"
+            aria-label="Sections"
+          >
+            {(
+              [
+                [
+                  "submissions",
+                  "Submitted",
+                  CheckCircle,
+                  badges.newSubs,
+                  "new",
+                ],
+                ["leads", "Unfinished", FileText, badges.followUp, "to chase"],
+              ] as const
+            ).map(([value, label, Icon, count, hint]) => {
+              const on = tab === value;
+              return (
+                <button
+                  key={value}
+                  onClick={() => setTab(value)}
+                  aria-current={on ? "page" : undefined}
+                  className={`flex items-center justify-center gap-2 rounded-2xl py-3 text-sm font-bold transition ${
+                    on
+                      ? "bg-[#075f3c] text-white"
+                      : "bg-[#eef0f4] text-stone-800"
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  {label}
+                  {count > 0 && (
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[11px] tabular-nums ${
+                        on
+                          ? "bg-white/25 text-white"
+                          : "bg-amber-400 text-stone-950"
+                      }`}
+                      aria-label={`${count} ${hint}`}
+                    >
+                      {count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+        )}
 
         {panel?.type === "submission" && (
           <SubmissionPanel
@@ -263,12 +336,16 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
           />
         )}
 
-        <div className="pointer-events-none fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2">
+        <div
+          className={`pointer-events-none fixed left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 flex-col items-center gap-2 ${
+            mobile ? "bottom-24" : "bottom-4"
+          }`}
+        >
           {toasts.map((t) => (
             <div
               key={t.id}
               role="status"
-              className="rounded-full bg-stone-950 px-4 py-2.5 text-xs font-semibold text-white shadow-lg"
+              className="rounded-2xl bg-stone-950 px-4 py-2.5 text-center text-xs font-semibold text-white shadow-lg"
             >
               {t.text}
             </div>

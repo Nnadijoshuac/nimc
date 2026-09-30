@@ -174,7 +174,7 @@ export const OverviewView: React.FC<{
       </section>
 
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-xs text-red-900">
+        <div className="rounded-lg bg-red-100 p-4 text-xs text-red-900">
           Couldn't load analytics: {error}
         </div>
       )}

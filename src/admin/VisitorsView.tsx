@@ -270,7 +270,7 @@ const STAGE_TONE = [
 
 export const StagePill: React.FC<{ stage: number }> = ({ stage }) => (
   <span
-    className={`inline-flex shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${STAGE_TONE[stage] ?? STAGE_TONE[0]}`}
+    className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${STAGE_TONE[stage] ?? STAGE_TONE[0]}`}
   >
     {FUNNEL_STAGES[stage] ?? "Visited"}
   </span>

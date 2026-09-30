@@ -126,7 +126,7 @@ export const Journey: React.FC<{
   return (
     <section>
       <SectionTitle>Journey</SectionTitle>
-      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-[#eeeeef] bg-[#eeeeef] text-xs sm:grid-cols-3">
+      <dl className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
         <Stat
           label="First visit"
           value={formatDateTime(visitor.first_seen_at)}
@@ -168,10 +168,7 @@ export const Journey: React.FC<{
               new Date(s.started_at).getTime()) /
             1000;
           return (
-            <li
-              key={s.id}
-              className="overflow-hidden rounded-lg border border-[#eeeeef]"
-            >
+            <li key={s.id} className="overflow-hidden rounded-lg bg-[#eef0f4]">
               <button
                 onClick={() => setOpen(expanded ? null : s.id)}
                 className="flex w-full items-center justify-between gap-3 bg-[#fbfbfd] px-3 py-2 text-left text-xs hover:bg-[#f5f5f7]"
@@ -187,12 +184,12 @@ export const Journey: React.FC<{
                     {s.page_views === 1 ? "" : "s"} · {formatDuration(duration)}
                   </span>
                 </span>
-                <span className="shrink-0 rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold text-stone-600 ring-1 ring-[#e5e5ea]">
+                <span className="shrink-0 rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold text-stone-700 shadow-sm">
                   {FUNNEL_STAGES[s.funnel_stage] ?? "Visited"}
                 </span>
               </button>
               {expanded && (
-                <ol className="space-y-1.5 border-t border-[#eeeeef] px-3 py-2.5">
+                <ol className="space-y-1.5 bg-white px-3 py-2.5">
                   {sessionEvents.length === 0 && (
                     <li className="text-[11px] text-stone-400">
                       No events recorded.
@@ -220,7 +217,7 @@ export const Journey: React.FC<{
 };
 
 const Stat: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div className="bg-white px-3 py-2">
+  <div className="rounded-lg bg-[#eef0f4] px-3 py-2">
     <dt className="text-[10px] font-semibold uppercase tracking-[0.06em] text-stone-500">
       {label}
     </dt>

@@ -143,7 +143,7 @@ export const BarChart: React.FC<{
       </svg>
       {hover !== null && data[hover] && (
         <div
-          className="pointer-events-none absolute top-0 z-10 -translate-x-1/2 rounded-lg border border-[#e5e5ea] bg-white px-3 py-2 text-xs shadow-lg"
+          className="pointer-events-none absolute top-0 z-10 -translate-x-1/2 rounded-lg bg-stone-950 px-3 py-2 text-xs text-white shadow-lg"
           style={{
             left: `${((pad.left + hover * slot + slot / 2) / width) * 100}%`,
             color: INK,
@@ -205,7 +205,7 @@ export const FunnelChart: React.FC<{
               </div>
             )}
             {hover === i && (
-              <div className="pointer-events-none absolute right-0 -top-9 z-10 max-w-xs rounded-lg border border-[#e5e5ea] bg-white px-3 py-2 text-[11px] text-stone-700 shadow-lg">
+              <div className="pointer-events-none absolute right-0 -top-9 z-10 max-w-xs rounded-lg bg-stone-950 px-3 py-2 text-[11px] text-white text-stone-700 shadow-lg">
                 {s.hint}
               </div>
             )}
