@@ -1,6 +1,6 @@
 import React from "react";
 import { NimcLogo } from "./logos/NimcLogo";
-import { GatewayLogo } from "./logos/GatewayLogo";
+import { NinSupportLogo } from "./logos/NinSupportLogo";
 import { OFFICE_INFO } from "../data/websiteContent";
 import { PageId } from "../types";
 import {
@@ -66,7 +66,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         <div className="grid gap-10 lg:grid-cols-[1.3fr_0.8fr_1fr_0.9fr]">
           <div>
             <div className="flex items-center gap-3">
-              <GatewayLogo variant="full" />
+              <NinSupportLogo variant="full" />
             </div>
             <p className="mt-4 max-w-sm text-sm leading-7 text-stone-600">
               Atlanta office support for Nigerian National Identification Number
@@ -180,7 +180,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
         <div className="mt-10 flex flex-col gap-4 border-t border-[#e5e5ea] pt-6 text-xs text-stone-500 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            Copyright {new Date().getFullYear()} Gateway. All rights reserved.
+            Copyright {new Date().getFullYear()} NIN Support Atlanta. All rights
+            reserved.
           </p>
           <div className="flex items-center gap-4">
             <button

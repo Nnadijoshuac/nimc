@@ -15,7 +15,9 @@ import {
   CheckmarkCircle02Icon,
   CheckmarkSquare01Icon,
   Clock01Icon,
+  Copy01Icon,
   CreditCardIcon,
+  Delete02Icon,
   Download04Icon,
   File01Icon,
   FingerPrintIcon,
@@ -23,14 +25,17 @@ import {
   Home09Icon,
   LinkSquare02Icon,
   Location01Icon,
+  Logout01Icon,
   Mail01Icon,
   Menu01Icon,
+  Note01Icon,
   PrinterIcon,
   RefreshIcon,
   RotateLeft01Icon,
   Search01Icon,
   SecurityValidationIcon,
   SecurityWarningIcon,
+  SentIcon,
   SquareIcon,
   SquareLock01Icon,
   TelephoneIcon,
@@ -41,6 +46,7 @@ import {
   ViewIcon,
   VolumeHighIcon,
   VolumeMute01Icon,
+  WhatsappIcon,
 } from "@hugeicons/core-free-icons";
 
 /**
@@ -113,3 +119,9 @@ export const Volume2 = icon(VolumeHighIcon, "Volume2");
 export const VolumeX = icon(VolumeMute01Icon, "VolumeX");
 export const X = icon(Cancel01Icon, "X");
 export const Alert = icon(Alert02Icon, "Alert");
+export const Copy = icon(Copy01Icon, "Copy");
+export const LogOut = icon(Logout01Icon, "LogOut");
+export const Note = icon(Note01Icon, "Note");
+export const Send = icon(SentIcon, "Send");
+export const Trash = icon(Delete02Icon, "Trash");
+export const WhatsApp = icon(WhatsappIcon, "WhatsApp");

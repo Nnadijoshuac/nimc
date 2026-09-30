@@ -1,0 +1,280 @@
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
+import { supabase } from "../lib/supabase";
+import { NimcLogo } from "../components/logos/NimcLogo";
+import { LogOut } from "../components/icons";
+import { AdminProvider } from "./context";
+import { OverviewView } from "./OverviewView";
+import { LeadsView } from "./LeadsView";
+import { SubmissionsView } from "./SubmissionsView";
+import { VisitorPanel, VisitorsView } from "./VisitorsView";
+import { SubmissionPanel } from "./SubmissionPanel";
+import { DraftPanel } from "./DraftPanel";
+import { AdminUser, Draft, KIND_LABEL, Submission, titleCase } from "./types";
+
+type Tab = "overview" | "leads" | "submissions" | "visitors";
+type Panel =
+  | { type: "submission"; id: string }
+  | { type: "draft"; id: string }
+  | { type: "visitor"; id: string }
+  | null;
+
+const TABS: [Tab, string][] = [
+  ["overview", "Overview"],
+  ["leads", "Unfinished forms"],
+  ["submissions", "Submissions"],
+  ["visitors", "Visitors"],
+];
+
+const db = supabase!;
+
+const readTab = (): Tab => {
+  const t = new URLSearchParams(window.location.search).get("tab");
+  return TABS.some(([v]) => v === t) ? (t as Tab) : "overview";
+};
+
+export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
+  const [tab, setTabState] = useState<Tab>(readTab);
+  const [panel, setPanel] = useState<Panel>(null);
+  const [admins, setAdmins] = useState<AdminUser[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [toasts, setToasts] = useState<{ id: number; text: string }[]>([]);
+  const [badges, setBadges] = useState({ followUp: 0, newSubs: 0 });
+
+  const setTab = (next: Tab) => {
+    setTabState(next);
+    const url = new URL(window.location.href);
+    url.searchParams.set("tab", next);
+    window.history.replaceState(null, "", url);
+  };
+
+  const toast = useCallback((text: string) => {
+    const id = Date.now() + Math.random();
+    setToasts((t) => [...t.slice(-2), { id, text }]);
+    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 5000);
+  }, []);
+
+  const loadBadges = useCallback(async () => {
+    const cutoff = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    const [a, b] = await Promise.all([
+      db
+        .from("form_drafts")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "open")
+        .lt("updated_at", cutoff),
+      db
+        .from("submissions")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "new"),
+    ]);
+    setBadges({ followUp: a.count ?? 0, newSubs: b.count ?? 0 });
+  }, []);
+
+  useEffect(() => {
+    db.from("admins")
+      .select("user_id, email, full_name")
+      .order("email")
+      .then(({ data }) => setAdmins((data ?? []) as AdminUser[]));
+    loadBadges();
+    // Abandoned-after-30-min is time based, so re-check periodically.
+    const t = setInterval(loadBadges, 60_000);
+    return () => clearInterval(t);
+  }, [loadBadges]);
+
+  // Realtime: new leads and submissions appear everywhere without a refresh.
+  const refreshTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+  useEffect(() => {
+    const bump = () => {
+      clearTimeout(refreshTimer.current);
+      refreshTimer.current = setTimeout(() => {
+        setRefreshKey((k) => k + 1);
+        loadBadges();
+      }, 600);
+    };
+    const channel = db
+      .channel("dashboard-feed")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "submissions" },
+        (p) => {
+          const s = p.new as Submission;
+          toast(
+            `New ${KIND_LABEL[s.kind].toLowerCase()} from ${titleCase(s.full_name)}`,
+          );
+          bump();
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "form_drafts" },
+        (p) => {
+          const d = p.new as Draft;
+          const who = titleCase(d.first_name) || d.email || d.phone;
+          toast(
+            `${who} just started a ${KIND_LABEL[d.kind].toLowerCase()} form`,
+          );
+          bump();
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "submissions" },
+        bump,
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "form_drafts" },
+        bump,
+      )
+      .subscribe();
+    return () => {
+      clearTimeout(refreshTimer.current);
+      db.removeChannel(channel);
+    };
+  }, [toast, loadBadges]);
+
+  const changed = useCallback(() => {
+    setRefreshKey((k) => k + 1);
+    loadBadges();
+  }, [loadBadges]);
+
+  const badgeFor = (t: Tab) =>
+    t === "leads" ? badges.followUp : t === "submissions" ? badges.newSubs : 0;
+
+  return (
+    <AdminProvider session={session} admins={admins} toast={toast}>
+      <div className="min-h-screen bg-[#f5f5f7] text-stone-950">
+        <header className="sticky top-0 z-30 border-b border-[#e5e5ea] bg-white/90 backdrop-blur-md">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 pt-3 sm:px-6">
+            <div className="flex items-center gap-3">
+              <NimcLogo size="sm" showSubtitle={false} />
+              <div>
+                <div className="text-sm font-bold">NIN Support back office</div>
+                <div className="text-xs text-stone-500">
+                  Atlanta enrolment centre
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="hidden text-xs text-stone-500 sm:inline">
+                {session.user.email}
+              </span>
+              <button
+                onClick={() => db.auth.signOut()}
+                className="flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold text-stone-600 hover:bg-[#f5f5f7]"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline">Sign out</span>
+              </button>
+            </div>
+          </div>
+          <nav
+            className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 sm:px-6"
+            aria-label="Sections"
+          >
+            {TABS.map(([value, label]) => {
+              const badge = badgeFor(value);
+              return (
+                <button
+                  key={value}
+                  onClick={() => setTab(value)}
+                  aria-current={tab === value ? "page" : undefined}
+                  className={`relative inline-flex shrink-0 items-center gap-1.5 px-3 py-3 text-xs font-semibold transition ${
+                    tab === value
+                      ? "text-stone-950"
+                      : "text-stone-500 hover:text-stone-800"
+                  }`}
+                >
+                  {label}
+                  {badge > 0 && (
+                    <span className="rounded-full bg-amber-100 px-1.5 text-[10px] tabular-nums text-amber-900">
+                      {badge}
+                    </span>
+                  )}
+                  {tab === value && (
+                    <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-[#0a7a4b]" />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+        </header>
+
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+          {tab === "overview" && (
+            <OverviewView refreshKey={refreshKey} onGo={setTab} />
+          )}
+          {tab === "leads" && (
+            <LeadsView
+              refreshKey={refreshKey}
+              selectedId={panel?.type === "draft" ? panel.id : null}
+              onOpen={(id) => setPanel({ type: "draft", id })}
+            />
+          )}
+          {tab === "submissions" && (
+            <SubmissionsView
+              refreshKey={refreshKey}
+              selectedId={panel?.type === "submission" ? panel.id : null}
+              onOpen={(id) => setPanel({ type: "submission", id })}
+            />
+          )}
+          {tab === "visitors" && (
+            <VisitorsView
+              refreshKey={refreshKey}
+              onOpenVisitor={(id) => setPanel({ type: "visitor", id })}
+            />
+          )}
+        </main>
+
+        {panel?.type === "submission" && (
+          <SubmissionPanel
+            key={panel.id}
+            submissionId={panel.id}
+            onClose={() => setPanel(null)}
+            onChanged={changed}
+            onDeleted={() => {
+              setPanel(null);
+              changed();
+            }}
+          />
+        )}
+        {panel?.type === "draft" && (
+          <DraftPanel
+            key={panel.id}
+            draftId={panel.id}
+            onClose={() => setPanel(null)}
+            onChanged={changed}
+            onDeleted={() => {
+              setPanel(null);
+              changed();
+            }}
+            onOpenSubmission={(id) => setPanel({ type: "submission", id })}
+          />
+        )}
+        {panel?.type === "visitor" && (
+          <VisitorPanel
+            key={panel.id}
+            visitorId={panel.id}
+            onClose={() => setPanel(null)}
+            onOpenDraft={(id) => setPanel({ type: "draft", id })}
+            onOpenSubmission={(id) => setPanel({ type: "submission", id })}
+          />
+        )}
+
+        <div className="pointer-events-none fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2">
+          {toasts.map((t) => (
+            <div
+              key={t.id}
+              role="status"
+              className="rounded-full bg-stone-950 px-4 py-2.5 text-xs font-semibold text-white shadow-lg"
+            >
+              {t.text}
+            </div>
+          ))}
+        </div>
+      </div>
+    </AdminProvider>
+  );
+};

@@ -2,7 +2,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "fs";
 import path from "path";
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 
 /**
  * @hugeicons/core-free-icons ships an ESM barrel whose re-exports disagree with
@@ -11,7 +11,7 @@ import { defineConfig, type Plugin } from "vite";
  * Windows and macOS, and fails the build on Linux CI. Fall back to a
  * case-insensitive lookup inside that package only.
  */
-function hugeiconsCaseFix(): Plugin {
+export function hugeiconsCaseFix(): Plugin {
   const dirCache = new Map<string, Map<string, string>>();
 
   return {
@@ -42,7 +42,34 @@ function hugeiconsCaseFix(): Plugin {
   };
 }
 
-export default defineConfig(() => {
+/**
+ * VITE_* values are baked into the JavaScript every visitor downloads. Refuse to
+ * start or build if the Supabase browser key is actually a secret key
+ * (service_role JWT or sb_secret_...), which would bypass all row level security.
+ */
+export function assertPublicSupabaseKey(mode: string, envDir: string) {
+  const key = loadEnv(mode, envDir, "VITE_").VITE_SUPABASE_ANON_KEY ?? "";
+  let role = "";
+  if (key.startsWith("eyJ")) {
+    try {
+      role = JSON.parse(
+        Buffer.from(key.split(".")[1], "base64url").toString(),
+      ).role;
+    } catch {
+      role = "";
+    }
+  }
+  if (key.startsWith("sb_secret_") || role === "service_role") {
+    throw new Error(
+      "VITE_SUPABASE_ANON_KEY is a SECRET key (service_role / sb_secret). " +
+        "It would be exposed to every visitor. Use the anon / publishable key " +
+        "from Supabase -> Project Settings -> API Keys instead.",
+    );
+  }
+}
+
+export default defineConfig(({ mode }) => {
+  assertPublicSupabaseKey(mode, __dirname);
   return {
     plugins: [hugeiconsCaseFix(), react(), tailwindcss()],
     resolve: {

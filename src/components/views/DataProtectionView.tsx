@@ -28,7 +28,7 @@ export const DataProtectionView: React.FC = () => {
           Data protection policy
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-700 sm:text-base">
-          Gateway protects demographic records and biometric data collected for
+          NIN Support Atlanta protects demographic records and biometric data collected for
           NIMC diaspora enrolment services.
         </p>
 

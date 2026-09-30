@@ -1,0 +1,4 @@
+/* The back office builds from admin/, so Tailwind's automatic source detection
+   would only see that folder. Point it at src/ where the components live. */
+@import "../index.css";
+@source "..";

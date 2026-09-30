@@ -14,9 +14,23 @@ View your app in AI Studio: https://ai.studio/apps/070fbf82-d6f3-4793-b1cc-dda0e
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+2. Copy `.env.example` to `.env.local` and set `VITE_SUPABASE_URL` and
+   `VITE_SUPABASE_ANON_KEY`
 3. Run the app:
    `npm run dev`
+
+## Forms, tracking and the back office
+
+Forms are captured step by step in Supabase (contact details first, so staff
+can follow up with anyone who stops part-way), visits are tracked first-party,
+and emails go out through Resend. Staff work from a separate back-office app:
+
+```bash
+npm run dev:admin     # http://localhost:3001
+npm run build:admin   # dist-admin/, deployed on its own address
+```
+
+Setup steps are in [docs/BACKEND.md](docs/BACKEND.md).
 
 ## Photo credits
 

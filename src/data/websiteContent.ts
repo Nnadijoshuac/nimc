@@ -7,7 +7,7 @@ import {
 } from "../types";
 
 export const OFFICE_INFO: OfficeContact = {
-  companyName: "Gateway",
+  companyName: "NIN Support Atlanta",
   tagline: "NIMC diaspora enrolment support in Atlanta",
   partnershipText:
     "Licensed diaspora enrolment partner supporting National Identity Management Commission (NIMC) services",
@@ -16,9 +16,9 @@ export const OFFICE_INFO: OfficeContact = {
   cityStateZip: "ATLANTA, 30328, GEORGIA",
   primaryPhone: "+1 (404) 563-1228",
   secondaryPhone: "+1 (678) 508-7689",
-  primaryEmail: "info@ninsupportatlanta.com",
+  primaryEmail: "info@ninsupportatalanta.com",
   secondaryEmail: "soniaedwinbiayeibo@gmail.com",
-  website: "www.ninsupportatlanta.com",
+  website: "www.ninsupportatalanta.com",
   hours: {
     weekdays: "Monday – Friday: 9:00 AM – 5:00 PM EST",
     saturday: "Saturday: 10:00 AM – 3:00 PM EST (By Appointment)",
@@ -26,7 +26,7 @@ export const OFFICE_INFO: OfficeContact = {
   },
   dpo: {
     name: "Mr. Johnson Brendan",
-    email: "info@ninsupportatlanta.com",
+    email: "info@ninsupportatalanta.com",
     phone: "+1 (404) 563-1228",
     effectiveDate: "January 1, 2023",
   },
@@ -39,7 +39,7 @@ export const ENROLLMENT_STEPS: EnrollmentStep[] = [
     shortDesc:
       "Download official form and make the required online diaspora fee payment.",
     fullDesc:
-      "Visit www.ninsupportatlanta.com to pre-enrol by downloading the standard NIN enrollment form. Print it, fill out all required fields, and bring it with you. Diaspora applicants must complete payment online through the verified portal before arriving for biometrics.",
+      "Visit www.ninsupportatalanta.com to pre-enrol by downloading the standard NIN enrollment form. Print it, fill out all required fields, and bring it with you. Diaspora applicants must complete payment online through the verified portal before arriving for biometrics.",
     requiredActions: [
       "Download official NIMC Diaspora Enrollment Form (PDF)",
       "Fill out personal information in legible block letters",
@@ -207,7 +207,7 @@ export const FAQ_ITEMS: FaqItem[] = [
       "No. You do NOT need to enroll again. Once a NIN is assigned, it remains yours for life. Enrolling a second time is illegal and will be rejected by the biometric matching system.",
     category: "retrieval",
     bulletPoints: [
-      "Visit our Gateway Atlanta Enrollment Center and provide your registered telephone number, date of birth, or fingerprint verification — your NIN will be retrieved for you immediately.",
+      "Visit our NIN Support Atlanta Enrollment Center and provide your registered telephone number, date of birth, or fingerprint verification — your NIN will be retrieved for you immediately.",
       "Individuals in Nigeria can retrieve their NIN instantly using USSD code *346# on any GSM network (nominal standard telecom charge applies).",
       "Retrieval can also be performed using the phone number supplied during initial enrollment or via biographical key information search.",
     ],
@@ -231,14 +231,14 @@ export const DATA_PROTECTION_SECTIONS: PolicySection[] = [
     number: "1",
     title: "Introduction",
     content:
-      "At Gateway, we understand the paramount importance of safeguarding sensitive information, particularly biometric data, entrusted to us by our valued clients. This Data Protection Policy outlines our commitment to ensuring the utmost security, confidentiality, and integrity of all data we collect, process, or store. We are dedicated to adhering to the highest standards of data protection, and this policy serves as a testament to our unwavering dedication to this cause.",
+      "At NIN Support Atlanta, we understand the paramount importance of safeguarding sensitive information, particularly biometric data, entrusted to us by our valued clients. This Data Protection Policy outlines our commitment to ensuring the utmost security, confidentiality, and integrity of all data we collect, process, or store. We are dedicated to adhering to the highest standards of data protection, and this policy serves as a testament to our unwavering dedication to this cause.",
   },
   {
     id: "scope",
     number: "2",
     title: "Scope",
     content:
-      "This policy applies to all employees, contractors, partners, and third parties who are involved in the collection, processing, or management of data within Gateway. It also encompasses all systems, applications, processes, and services that involve the handling of sensitive identity information.",
+      "This policy applies to all employees, contractors, partners, and third parties who are involved in the collection, processing, or management of data within NIN Support Atlanta. It also encompasses all systems, applications, processes, and services that involve the handling of sensitive identity information.",
   },
   {
     id: "principles",
@@ -343,7 +343,7 @@ export const DATA_PROTECTION_SECTIONS: PolicySection[] = [
     number: "7",
     title: "Compliance and Accountability",
     content:
-      "Gateway is committed to maintaining continuous compliance with all applicable data protection laws. Our designated Data Protection Officers oversee compliance efforts, answer client inquiries, and serve as the liaison with regulatory authorities.",
+      "NIN Support Atlanta is committed to maintaining continuous compliance with all applicable data protection laws. Our designated Data Protection Officers oversee compliance efforts, answer client inquiries, and serve as the liaison with regulatory authorities.",
   },
   {
     id: "continuous-improvement",

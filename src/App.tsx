@@ -10,11 +10,66 @@ import { AppointmentModal } from "./components/AppointmentModal";
 import { PreEnrollmentModal } from "./components/PreEnrollmentModal";
 import { PhoneCall, Calendar, Download } from "./components/icons";
 import { OFFICE_INFO } from "./data/websiteContent";
+import { installAnalytics, trackPageView } from "./lib/analytics";
+import { loadDraft } from "./lib/forms";
+import type { ResumeData } from "./components/forms/useFormJourney";
+
+const PAGE_PATHS: Record<PageId, string> = {
+  home: "/",
+  "how-to-enroll": "/how-to-enroll",
+  faq: "/faq",
+  "data-protection": "/data-protection",
+};
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageId>("home");
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isPreEnrollOpen, setIsPreEnrollOpen] = useState(false);
+  const [resumeAppointment, setResumeAppointment] = useState<ResumeData | null>(
+    null,
+  );
+  const [resumePreEnroll, setResumePreEnroll] = useState<ResumeData | null>(
+    null,
+  );
+  const [resumeNotice, setResumeNotice] = useState<string | null>(null);
+
+  // Analytics: global listeners once, a page view per page.
+  useEffect(() => {
+    installAnalytics();
+  }, []);
+  useEffect(() => {
+    trackPageView(PAGE_PATHS[currentPage]);
+  }, [currentPage]);
+
+  // Resume links from staff follow-up emails: /?resume=<draft id>
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const draftId = params.get("resume");
+    if (!draftId) return;
+    params.delete("resume");
+    const query = params.toString();
+    window.history.replaceState(
+      null,
+      "",
+      window.location.pathname + (query ? `?${query}` : ""),
+    );
+    loadDraft(draftId).then((draft) => {
+      if (!draft) {
+        setResumeNotice(
+          "That link has expired or the form was already submitted. You can start a new one below.",
+        );
+        return;
+      }
+      const resume = { draftId, data: draft.data };
+      if (draft.kind === "appointment") {
+        setResumeAppointment(resume);
+        setIsBookingOpen(true);
+      } else {
+        setResumePreEnroll(resume);
+        setIsPreEnrollOpen(true);
+      }
+    });
+  }, []);
 
   // Accessibility State
   const [accessibilitySettings, setAccessibilitySettings] =
@@ -51,7 +106,7 @@ export default function App() {
   // Dynamic titles and summaries for the Screen Reader assistant
   const pageMeta: Record<PageId, { title: string; summary: string }> = {
     home: {
-      title: "Gateway NIMC Diaspora Enrolment Center Atlanta",
+      title: "NIN Support Atlanta | NIMC Diaspora Enrolment Center",
       summary:
         "Official licensed partner for National Identification Number issuance. Visit 1 Glenlake Parkway, Suite 702, Atlanta for on the spot NIN biometrics capture.",
     },
@@ -156,14 +211,38 @@ export default function App() {
       {/* Appointment Booking Modal */}
       <AppointmentModal
         isOpen={isBookingOpen}
-        onClose={() => setIsBookingOpen(false)}
+        resume={resumeAppointment}
+        onClose={() => {
+          setIsBookingOpen(false);
+          setResumeAppointment(null);
+        }}
       />
 
       {/* Pre-Enrollment Slip Generator Modal */}
       <PreEnrollmentModal
         isOpen={isPreEnrollOpen}
-        onClose={() => setIsPreEnrollOpen(false)}
+        resume={resumePreEnroll}
+        onClose={() => {
+          setIsPreEnrollOpen(false);
+          setResumePreEnroll(null);
+        }}
       />
+
+      {resumeNotice && (
+        <div
+          role="status"
+          className="fixed inset-x-3 bottom-20 z-50 mx-auto flex max-w-md items-start gap-3 rounded-xl bg-stone-950 px-4 py-3 text-xs text-white shadow-lg sm:bottom-6"
+        >
+          <p className="flex-1 leading-5">{resumeNotice}</p>
+          <button
+            onClick={() => setResumeNotice(null)}
+            className="font-semibold text-emerald-300"
+            data-no-track
+          >
+            OK
+          </button>
+        </div>
+      )}
     </div>
   );
 }

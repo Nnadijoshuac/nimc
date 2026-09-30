@@ -1,0 +1,21 @@
+# Supabase CLI project config. Only the settings this project relies on are
+# listed; everything else uses CLI defaults. Link with `npx supabase link`.
+
+project_id = "nin-support-atlanta"
+
+[functions.submit-form]
+# Public form endpoint: anyone may call it, it validates and rate-limits itself.
+verify_jwt = false
+
+[functions.admin-send-email]
+# The function checks the caller's session and admin membership itself, which
+# also works with Supabase's newer non-JWT publishable/secret keys.
+verify_jwt = false
+
+[functions.track]
+# Public analytics collector; accepts text/plain beacons with no auth header.
+verify_jwt = false
+
+[functions.save-draft]
+# Public: saves partially filled forms and loads them for resume links.
+verify_jwt = false
