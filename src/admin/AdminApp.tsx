@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
-import { NimcLogo } from "../components/logos/NimcLogo";
+import { NinSupportLogo } from "../components/logos/NinSupportLogo";
 import { Alert, CheckCircle, Lock, Mail, Users } from "../components/icons";
 import { Spinner } from "../components/FormBits";
 import { Dashboard } from "./Dashboard";
@@ -129,7 +129,7 @@ const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="admin-app flex min-h-screen items-center justify-center px-4 py-10">
     <div className="paper-panel w-full max-w-sm p-6">
       <div className="mb-6 flex items-center gap-3">
-        <NimcLogo size="sm" showSubtitle={false} />
+        <NinSupportLogo variant="mark" className="h-10 w-10" />
         <div>
           <div className="text-sm font-bold text-stone-950">
             NIN Support back office

@@ -1,17 +1,52 @@
-// Transactional email templates. Inline styles and tables only: email clients
-// ignore <style> blocks and flexbox.
+// Transactional email design system.
+//
+// Email clients are hostile to modern CSS, so everything here is tables and
+// inline styles, with a small <style> block only for progressive enhancements
+// (mobile stacking) that clients which ignore it can safely skip. Colours are
+// pinned to a light scheme so dark-mode clients don't invert the brand.
 
 export const OFFICE = {
-  name: "NIN Support Atlanta Diaspora Enrolment Center",
-  address: "1 Glenlake Parkway, Suite 702, Atlanta, GA 30328",
+  name: "NIN Support Atlanta",
+  longName: "NIN Support Atlanta Diaspora Enrolment Center",
+  address: "1 Glenlake Parkway, Suite 702",
+  city: "Atlanta, GA 30328",
   phone: "+1 (404) 563-1228",
+  phoneHref: "tel:+14045631228",
   email: "info@ninsupportatalanta.com",
   website: "https://www.ninsupportatalanta.com",
+  websiteLabel: "ninsupportatalanta.com",
   hours: "Monday – Friday, 9:00 AM – 5:00 PM EST",
 };
 
+/** Brand images are served by the public site so every email can load them. */
+const ASSETS = `${OFFICE.website}/brand`;
+
 const DASHBOARD_URL =
   Deno.env.get("ADMIN_DASHBOARD_URL") ?? "https://admin.ninsupportatalanta.com";
+
+// Palette
+const C = {
+  canvas: "#eef0f3",
+  card: "#ffffff",
+  ink: "#0f1419",
+  body: "#3b4350",
+  muted: "#667080",
+  hairline: "#e7e9ee",
+  well: "#f6f7f9",
+  green: "#075f3c",
+  greenSoft: "#e7f3ec",
+  greenInk: "#064e32",
+  ticket: "#f7f3ea",
+  ticketLine: "#e6dcc6",
+  amberSoft: "#fdf3dc",
+  amberInk: "#7a4d00",
+  blueSoft: "#e8f1fb",
+  blueInk: "#123f73",
+};
+
+const FONT =
+  "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+const MONO = "'SFMono-Regular',Menlo,Consolas,'Liberation Mono',monospace";
 
 /** "CHUKWUDI" -> "Chukwudi" for greetings; names are stored upper-case. */
 export const titleCase = (value: string) =>
@@ -26,68 +61,235 @@ export function escapeHtml(value: unknown): string {
     .replace(/'/g, "&#39;");
 }
 
-type Row = [label: string, value: string | null | undefined];
+const e = escapeHtml;
 
-function rowsHtml(rows: Row[]): string {
-  return rows
-    .filter(([, value]) => value)
-    .map(
-      ([label, value]) => `
-        <tr>
-          <td style="padding:8px 12px;border-bottom:1px solid #eeeeef;color:#6e6e73;font-size:12px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;vertical-align:top">${escapeHtml(label)}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #eeeeef;color:#1d1d1f;font-size:14px;font-weight:600">${escapeHtml(value)}</td>
-        </tr>`,
-    )
-    .join("");
+// ---------------------------------------------------------------------------
+// Building blocks
+// ---------------------------------------------------------------------------
+
+type Tone = "green" | "amber" | "blue";
+
+const TONES: Record<Tone, [bg: string, ink: string]> = {
+  green: [C.greenSoft, C.greenInk],
+  amber: [C.amberSoft, C.amberInk],
+  blue: [C.blueSoft, C.blueInk],
+};
+
+function eyebrow(label: string, tone: Tone = "green") {
+  const [bg, ink] = TONES[tone];
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 18px"><tr>
+    <td style="background:${bg};color:${ink};border-radius:999px;padding:6px 12px;font:700 11px/1 ${FONT};letter-spacing:.08em;text-transform:uppercase">${e(label)}</td>
+  </tr></table>`;
 }
 
-function rowsText(rows: Row[]): string {
-  return rows
-    .filter(([, value]) => value)
-    .map(([label, value]) => `${label}: ${value}`)
-    .join("\n");
+function heading(text: string) {
+  return `<h1 class="h1" style="margin:0 0 12px;font:800 26px/1.25 ${FONT};letter-spacing:-.02em;color:${C.ink}">${e(text)}</h1>`;
+}
+
+function lead(html: string) {
+  return `<p style="margin:0 0 24px;font:400 16px/1.6 ${FONT};color:${C.body}">${html}</p>`;
+}
+
+function para(html: string, extra = "") {
+  return `<p style="margin:0 0 16px;font:400 16px/1.65 ${FONT};color:${C.body};${extra}">${html}</p>`;
+}
+
+function sectionTitle(text: string) {
+  return `<p style="margin:32px 0 14px;font:700 12px/1 ${FONT};letter-spacing:.08em;text-transform:uppercase;color:${C.muted}">${e(text)}</p>`;
+}
+
+/** Bulletproof pill button (renders as a solid block even without images). */
+function button(
+  href: string,
+  label: string,
+  variant: "primary" | "secondary" = "primary",
+) {
+  const [bg, ink] =
+    variant === "primary" ? [C.green, "#ffffff"] : [C.well, C.ink];
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="display:inline-table;margin:0 8px 8px 0"><tr>
+    <td style="background:${bg};border-radius:999px">
+      <a href="${e(href)}" target="_blank" style="display:inline-block;padding:14px 26px;font:700 15px/1 ${FONT};color:${ink};text-decoration:none;border-radius:999px">${e(label)}</a>
+    </td>
+  </tr></table>`;
+}
+
+function ticket(label: string, value: string, note: string) {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.ticket};border:1px dashed ${C.ticketLine};border-radius:14px"><tr>
+    <td class="stack" style="padding:18px 22px">
+      <p style="margin:0 0 6px;font:700 11px/1 ${FONT};letter-spacing:.1em;text-transform:uppercase;color:${C.muted}">${e(label)}</p>
+      <p style="margin:0;font:800 24px/1.2 ${MONO};letter-spacing:.04em;color:${C.ink}">${e(value)}</p>
+    </td>
+    <td class="stack" align="right" style="padding:18px 22px;font:500 13px/1.5 ${FONT};color:${C.muted}">${e(note)}</td>
+  </tr></table>`;
+}
+
+type Row = [label: string, value: string | null | undefined];
+
+function details(rows: Row[]) {
+  const shown = rows.filter(([, v]) => v);
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.well};border-radius:14px">
+    ${shown
+      .map(
+        ([label, value], i) => `<tr>
+      <td style="padding:14px 20px;${i ? `border-top:1px solid ${C.hairline};` : ""}font:500 14px/1.4 ${FONT};color:${C.muted};white-space:nowrap;vertical-align:top">${e(label)}</td>
+      <td align="right" style="padding:14px 20px;${i ? `border-top:1px solid ${C.hairline};` : ""}font:600 15px/1.4 ${FONT};color:${C.ink}">${e(value)}</td>
+    </tr>`,
+      )
+      .join("")}
+  </table>`;
+}
+
+function steps(items: [title: string, body: string][]) {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    ${items
+      .map(
+        ([title, body], i) => `<tr>
+      <td width="44" valign="top" style="padding:0 0 18px">
+        <table role="presentation" cellpadding="0" cellspacing="0"><tr><td width="30" height="30" align="center" style="background:${C.greenSoft};color:${C.greenInk};border-radius:999px;font:800 14px/30px ${FONT}">${i + 1}</td></tr></table>
+      </td>
+      <td valign="top" style="padding:3px 0 18px">
+        <p style="margin:0 0 4px;font:700 15px/1.4 ${FONT};color:${C.ink}">${e(title)}</p>
+        <p style="margin:0;font:400 14px/1.6 ${FONT};color:${C.body}">${e(body)}</p>
+      </td>
+    </tr>`,
+      )
+      .join("")}
+  </table>`;
+}
+
+function checklist(items: string[]) {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    ${items
+      .map(
+        (item) => `<tr>
+      <td width="34" valign="top" style="padding:0 0 12px">
+        <table role="presentation" cellpadding="0" cellspacing="0"><tr><td width="22" height="22" align="center" style="background:${C.green};color:#ffffff;border-radius:999px;font:800 12px/22px ${FONT}">&#10003;</td></tr></table>
+      </td>
+      <td valign="top" style="padding:1px 0 12px;font:500 15px/1.5 ${FONT};color:${C.ink}">${e(item)}</td>
+    </tr>`,
+      )
+      .join("")}
+  </table>`;
+}
+
+function callout(html: string, tone: Tone = "blue") {
+  const [bg, ink] = TONES[tone];
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${bg};border-radius:14px"><tr>
+    <td style="padding:16px 20px;font:500 14px/1.6 ${FONT};color:${ink}">${html}</td>
+  </tr></table>`;
+}
+
+function helpCard() {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.well};border-radius:14px;margin-top:28px"><tr>
+    <td style="padding:18px 22px">
+      <p style="margin:0 0 4px;font:700 15px/1.4 ${FONT};color:${C.ink}">Need help?</p>
+      <p style="margin:0;font:400 14px/1.6 ${FONT};color:${C.body}">Reply to this email, or call <a href="${OFFICE.phoneHref}" style="color:${C.green};font-weight:700;text-decoration:none;white-space:nowrap">${e(OFFICE.phone)}</a>. We're open ${e(OFFICE.hours)}.</p>
+    </td>
+  </tr></table>`;
 }
 
 function layout(opts: {
   preheader: string;
-  heading: string;
-  body: string;
+  content: string;
+  audience?: "public" | "staff";
 }): string {
+  const footerNote =
+    opts.audience === "staff"
+      ? "Internal message for the NIN Support Atlanta team."
+      : `You're receiving this because of activity on ${OFFICE.websiteLabel}.`;
   return `<!doctype html>
-<html>
-  <body style="margin:0;padding:0;background:#f5f5f7;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#1d1d1f">
-    <span style="display:none;max-height:0;overflow:hidden">${escapeHtml(opts.preheader)}</span>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f7;padding:24px 12px">
-      <tr><td align="center">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e5ea">
-          <tr><td style="background:#075f3c;height:6px;line-height:6px;font-size:0">&nbsp;</td></tr>
-          <tr><td style="padding:24px 28px 8px">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#075f3c">NIN Support · Atlanta</div>
-            <h1 style="margin:8px 0 0;font-size:20px;line-height:1.3;color:#1d1d1f">${escapeHtml(opts.heading)}</h1>
-          </td></tr>
-          <tr><td style="padding:8px 28px 24px;font-size:14px;line-height:1.6;color:#3a3a3c">${opts.body}</td></tr>
-          <tr><td style="padding:16px 28px;background:#fbfbfd;border-top:1px solid #eeeeef;font-size:12px;line-height:1.6;color:#6e6e73">
-            ${escapeHtml(OFFICE.name)}<br>
-            ${escapeHtml(OFFICE.address)}<br>
-            ${escapeHtml(OFFICE.phone)} · <a href="mailto:${OFFICE.email}" style="color:#075f3c">${OFFICE.email}</a>
-          </td></tr>
-        </table>
-      </td></tr>
-    </table>
-  </body>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>${e(OFFICE.name)}</title>
+<style>
+  body { margin:0 !important; padding:0 !important; }
+  a { color:${C.green}; }
+  @media (max-width: 620px) {
+    .px { padding-left:24px !important; padding-right:24px !important; }
+    .h1 { font-size:23px !important; }
+    .stack { display:block !important; width:auto !important; text-align:left !important; }
+    .stack + .stack { padding-top:0 !important; }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:${C.canvas};-webkit-text-size-adjust:100%">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${e(opts.preheader)}${"&#8202;&zwnj;&nbsp;".repeat(40)}</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.canvas}">
+    <tr><td align="center" style="padding:32px 12px 40px">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px">
+
+        <!-- Brand -->
+        <tr><td align="center" style="padding:0 8px 22px">
+          <a href="${OFFICE.website}" target="_blank" style="text-decoration:none">
+            <img src="${ASSETS}/logo-email.png" width="190" alt="NIN Support Atlanta" style="display:block;width:190px;max-width:190px;height:auto;border:0;outline:none;font:800 18px/1.2 ${FONT};color:${C.green}">
+          </a>
+        </td></tr>
+
+        <!-- Card -->
+        <tr><td style="background:${C.card};border-radius:20px;box-shadow:0 1px 2px rgba(16,24,40,.06),0 12px 32px -12px rgba(16,24,40,.18)">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr><td class="px" style="padding:36px 40px 40px">${opts.content}</td></tr>
+          </table>
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td align="center" style="padding:28px 16px 0">
+          <p style="margin:0 0 6px;font:700 13px/1.5 ${FONT};color:${C.ink}">${e(OFFICE.longName)}</p>
+          <p style="margin:0 0 6px;font:400 13px/1.6 ${FONT};color:${C.muted}">${e(OFFICE.address)}, ${e(OFFICE.city)}<br>${e(OFFICE.hours)}</p>
+          <p style="margin:0 0 16px;font:500 13px/1.6 ${FONT};color:${C.muted}">
+            <a href="${OFFICE.phoneHref}" style="color:${C.green};text-decoration:none;white-space:nowrap">${e(OFFICE.phone)}</a>
+            &nbsp;·&nbsp; <a href="mailto:${OFFICE.email}" style="color:${C.green};text-decoration:none">${e(OFFICE.email)}</a>
+            &nbsp;·&nbsp; <a href="${OFFICE.website}" style="color:${C.green};text-decoration:none">${e(OFFICE.websiteLabel)}</a>
+          </p>
+          <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 16px"><tr>
+            <td style="padding-right:10px;font:700 10px/1 ${FONT};letter-spacing:.12em;text-transform:uppercase;color:#8a93a1">Supported by</td>
+            <td><img src="${ASSETS}/nimc.png" width="64" alt="NIMC" style="display:block;width:64px;height:auto;border:0;font:700 12px/1 ${FONT};color:${C.muted}"></td>
+          </tr></table>
+          <p style="margin:0;font:400 12px/1.6 ${FONT};color:#8a93a1">${e(footerNote)}</p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
 </html>`;
 }
 
-function referenceBlock(reference: string): string {
-  return `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:#f2eee4;border-radius:8px">
-      <tr><td style="padding:14px 16px">
-        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6e6e73">Your reference</div>
-        <div style="font-family:Consolas,Menlo,monospace;font-size:20px;font-weight:800;letter-spacing:.04em;color:#1d1d1f">${escapeHtml(reference)}</div>
-      </td></tr>
-    </table>`;
+// Plain-text companions -----------------------------------------------------
+
+const textFooter = [
+  "",
+  "—",
+  OFFICE.longName,
+  `${OFFICE.address}, ${OFFICE.city}`,
+  `${OFFICE.phone} · ${OFFICE.email} · ${OFFICE.websiteLabel}`,
+].join("\n");
+
+const textRows = (rows: Row[]) =>
+  rows
+    .filter(([, v]) => v)
+    .map(([l, v]) => `${l}: ${v}`)
+    .join("\n");
+
+function prettyDate(iso: string): string {
+  const date = new Date(`${iso}T12:00:00Z`);
+  if (Number.isNaN(date.getTime())) return iso;
+  return date.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 }
 
+// ---------------------------------------------------------------------------
+// Applicant emails
 // ---------------------------------------------------------------------------
 
 export interface PreEnrollmentEmailData {
@@ -114,104 +316,125 @@ export interface AppointmentEmailData {
   notes?: string;
 }
 
-function prettyDate(iso: string): string {
-  const date = new Date(`${iso}T12:00:00Z`);
-  if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
+const BRING = [
+  "Your valid Nigerian passport (or another accepted ID)",
+  "Your diaspora NIN payment receipt, printed or on your phone",
+  "This reference number",
+];
 
 export function preEnrollmentApplicantEmail(d: PreEnrollmentEmailData) {
+  const first = titleCase(d.firstName);
   const rows: Row[] = [
-    ["Name", d.fullName],
-    ["Date of birth", d.dateOfBirth],
+    ["Full name", titleCase(d.fullName)],
+    ["Date of birth", prettyDate(d.dateOfBirth)],
     ["State of origin", d.stateOfOrigin],
-    ["Passport no.", d.passportNumber],
+    ["Passport number", d.passportNumber],
   ];
-  const steps = [
-    "Complete the diaspora NIN fee payment through the official portal and keep the receipt.",
-    "Bring this reference, your valid Nigerian passport (or other accepted ID) and payment receipt to our office.",
-    "Your biometrics (fingerprints, photo, signature) are captured on the spot. Your NIN is issued after NIMC validation.",
+  const next: [string, string][] = [
+    [
+      "Pay the diaspora NIN fee",
+      "Complete payment through the official NIMC portal and keep your receipt.",
+    ],
+    [
+      "Visit our Atlanta office",
+      `Come to ${OFFICE.address}, ${OFFICE.city}. Walk-ins are welcome ${OFFICE.hours}.`,
+    ],
+    [
+      "Capture your biometrics",
+      "Fingerprints, photo and signature take about 30 minutes. Your NIN is issued once NIMC validates it.",
+    ],
   ];
 
   return {
-    subject: `Pre-enrolment received · ${d.reference}`,
+    subject: `You're pre-enrolled, ${first} · ${d.reference}`,
     html: layout({
-      preheader: `We received your NIN pre-enrolment. Reference ${d.reference}.`,
-      heading: `Thank you, ${titleCase(d.firstName)}. Your pre-enrolment is in.`,
-      body: `
-        <p style="margin:0 0 4px">Our Atlanta team has received your NIN pre-enrolment and will contact you shortly to help you complete the process.</p>
-        ${referenceBlock(d.reference)}
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #eeeeef;border-radius:8px;border-collapse:separate">${rowsHtml(rows)}</table>
-        <h2 style="margin:24px 0 8px;font-size:15px;color:#1d1d1f">What happens next</h2>
-        <ol style="margin:0;padding-left:20px">${steps.map((s) => `<li style="margin-bottom:6px">${escapeHtml(s)}</li>`).join("")}</ol>
-        <p style="margin:20px 0 0">Walk-ins are welcome ${escapeHtml(OFFICE.hours)}, or reply to this email to book a time. Questions? Call <a href="tel:${OFFICE.phone}" style="color:#075f3c;font-weight:600">${escapeHtml(OFFICE.phone)}</a>.</p>
-        <p style="margin:16px 0 0;font-size:12px;color:#6e6e73">If you did not submit this form, reply and let us know and we will delete the record.</p>`,
+      preheader: `Your NIN pre-enrolment is in. Reference ${d.reference}. Here's what to do next.`,
+      content: `
+        ${eyebrow("Pre-enrolment received")}
+        ${heading(`You're all set, ${first}.`)}
+        ${lead("We've received your NIN pre-enrolment. Our Atlanta team will be in touch shortly to help you finish, and everything you need is below.")}
+        ${ticket("Your reference", d.reference, "Keep this handy for your visit.")}
+        ${sectionTitle("What happens next")}
+        ${steps(next)}
+        ${sectionTitle("Please bring")}
+        ${checklist(BRING)}
+        ${sectionTitle("Your details")}
+        ${details(rows)}
+        <p style="margin:12px 0 0;font:400 13px/1.6 ${FONT};color:${C.muted}">Something wrong? Just reply and we'll correct it before your visit.</p>
+        ${helpCard()}`,
     }),
     text: [
-      `Thank you, ${titleCase(d.firstName)}. Your NIN pre-enrolment is in.`,
+      `You're all set, ${first}.`,
       "",
-      `Reference: ${d.reference}`,
+      "We've received your NIN pre-enrolment. Our Atlanta team will be in touch shortly.",
       "",
-      rowsText(rows),
+      `Your reference: ${d.reference}`,
       "",
       "What happens next:",
-      ...steps.map((s, i) => `${i + 1}. ${s}`),
+      ...next.map(([t, b], i) => `${i + 1}. ${t}: ${b}`),
       "",
-      `${OFFICE.name}`,
-      `${OFFICE.address}`,
-      `${OFFICE.phone} · ${OFFICE.email}`,
+      "Please bring:",
+      ...BRING.map((b) => `- ${b}`),
+      "",
+      "Your details:",
+      textRows(rows),
+      "",
+      `Need help? Reply to this email or call ${OFFICE.phone}.`,
+      textFooter,
     ].join("\n"),
   };
 }
 
 export function appointmentApplicantEmail(d: AppointmentEmailData) {
+  const first = titleCase(d.firstName);
+  const when = `${prettyDate(d.date)} at ${d.time}`;
   const rows: Row[] = [
     ["Service", d.service],
-    ["Requested date", prettyDate(d.date)],
-    ["Requested time", d.time],
-    ["Location", OFFICE.address],
+    ["Date", prettyDate(d.date)],
+    ["Time", d.time],
+    ["Where", `${OFFICE.address}, ${OFFICE.city}`],
   ];
 
   return {
-    subject: `Appointment request received · ${d.reference}`,
+    subject: `Appointment request received · ${prettyDate(d.date)}`,
     html: layout({
-      preheader: `We received your appointment request for ${prettyDate(d.date)} at ${d.time}.`,
-      heading: "We received your appointment request",
-      body: `
-        <p style="margin:0 0 4px">Hello ${escapeHtml(titleCase(d.firstName))}, thanks for booking with us. A member of our team will confirm your slot by phone or email.</p>
-        ${referenceBlock(d.reference)}
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #eeeeef;border-radius:8px;border-collapse:separate">${rowsHtml(rows)}</table>
-        <h2 style="margin:24px 0 8px;font-size:15px;color:#1d1d1f">Please bring</h2>
-        <ul style="margin:0;padding-left:20px">
-          <li style="margin-bottom:6px">Valid Nigerian passport or other accepted identification</li>
-          <li style="margin-bottom:6px">Your diaspora NIN payment receipt (printed or on your phone)</li>
-          <li style="margin-bottom:6px">Your pre-enrolment reference, if you have one</li>
-        </ul>
-        <p style="margin:20px 0 0">Need to change the time? Reply to this email or call <a href="tel:${OFFICE.phone}" style="color:#075f3c;font-weight:600">${escapeHtml(OFFICE.phone)}</a>.</p>`,
+      preheader: `We've got your request for ${when}. We'll confirm your slot shortly.`,
+      content: `
+        ${eyebrow("Appointment request", "blue")}
+        ${heading(`Thanks, ${first}. We've got your request.`)}
+        ${lead(`You asked to visit on <strong style="color:${C.ink}">${e(when)}</strong>. A member of our team will confirm your slot by phone or email.`)}
+        ${ticket("Your reference", d.reference, "Quote this if you call us.")}
+        ${sectionTitle("Your visit")}
+        ${details(rows)}
+        ${sectionTitle("Please bring")}
+        ${checklist(BRING)}
+        <div style="margin-top:24px">${callout(`Need a different time? Reply to this email or call <a href="${OFFICE.phoneHref}" style="color:${C.blueInk};font-weight:700;white-space:nowrap">${e(OFFICE.phone)}</a> and we'll rearrange it.`)}</div>
+        ${helpCard()}`,
     }),
     text: [
-      `Hello ${titleCase(d.firstName)}, we received your appointment request.`,
+      `Thanks, ${first}. We've got your appointment request for ${when}.`,
       "",
-      `Reference: ${d.reference}`,
+      `Your reference: ${d.reference}`,
       "",
-      rowsText(rows),
+      textRows(rows),
       "",
-      "Please bring: valid passport or accepted ID, your NIN payment receipt, and your pre-enrolment reference if you have one.",
+      "Please bring:",
+      ...BRING.map((b) => `- ${b}`),
       "",
-      "A member of our team will confirm your slot. Reply to this email or call to change the time.",
-      "",
-      `${OFFICE.name}`,
-      `${OFFICE.address}`,
-      `${OFFICE.phone} · ${OFFICE.email}`,
+      `Need a different time? Reply or call ${OFFICE.phone}.`,
+      textFooter,
     ].join("\n"),
   };
 }
+
+// ---------------------------------------------------------------------------
+// Staff alert for every new submission
+// ---------------------------------------------------------------------------
+
+const waLink = (phone: string) => {
+  const digits = phone.replace(/\D/g, "");
+  return `https://wa.me/${digits.length === 10 ? `1${digits}` : digits}`;
+};
 
 export function staffNotificationEmail(opts: {
   kind: "pre_enrollment" | "appointment";
@@ -223,35 +446,49 @@ export function staffNotificationEmail(opts: {
 }) {
   const label =
     opts.kind === "pre_enrollment" ? "pre-enrolment" : "appointment request";
+  const name = titleCase(opts.fullName);
   const rows: Row[] = [
     ["Reference", opts.reference],
-    ["Name", opts.fullName],
-    ["Email", opts.email],
     ["Phone", opts.phone],
-    ...opts.rows,
+    ["Email", opts.email],
+    ...opts.rows.map(([l, v]): Row => [
+      l,
+      v && /^\d{4}-\d{2}-\d{2}$/.test(v) ? prettyDate(v) : v,
+    ]),
   ];
 
   return {
-    subject: `New ${label}: ${opts.fullName} (${opts.reference})`,
+    subject: `New ${label}: ${name} (${opts.reference})`,
     html: layout({
-      preheader: `${opts.fullName} submitted a ${label}.`,
-      heading: `New ${label}`,
-      body: `
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #eeeeef;border-radius:8px;border-collapse:separate">${rowsHtml(rows)}</table>
-        <p style="margin:20px 0 0">
-          <a href="${escapeHtml(DASHBOARD_URL)}" style="display:inline-block;background:#075f3c;color:#ffffff;text-decoration:none;font-weight:700;font-size:13px;padding:10px 18px;border-radius:999px">Open in dashboard</a>
-        </p>
-        <p style="margin:12px 0 0;font-size:12px;color:#6e6e73">Reply to this email to write to the applicant directly.</p>`,
+      audience: "staff",
+      preheader: `${name} just submitted a ${label}. Reach out while it's fresh.`,
+      content: `
+        ${eyebrow(`New ${label}`, opts.kind === "appointment" ? "blue" : "green")}
+        ${heading(name)}
+        ${lead("Just submitted from the website. People are most responsive in the first hour, so reach out while it's fresh.")}
+        <div style="margin:0 0 24px">
+          ${button(`${DASHBOARD_URL}/?tab=submissions`, "Open in back office")}
+          ${button(`tel:${opts.phone.replace(/[^\d+]/g, "")}`, "Call", "secondary")}
+          ${button(waLink(opts.phone), "WhatsApp", "secondary")}
+        </div>
+        ${details(rows)}
+        <p style="margin:16px 0 0;font:400 13px/1.6 ${FONT};color:${C.muted}">Reply to this email to write to the applicant directly.</p>`,
     }),
     text: [
-      `New ${label}`,
+      `New ${label}: ${name}`,
       "",
-      rowsText(rows),
+      textRows(rows),
       "",
-      `Dashboard: ${DASHBOARD_URL}`,
+      `Open in back office: ${DASHBOARD_URL}/?tab=submissions`,
     ].join("\n"),
   };
 }
+
+// ---------------------------------------------------------------------------
+// Messages staff write from the back office
+// ---------------------------------------------------------------------------
+
+const URL_RE = /https?:\/\/[^\s<]+[^\s<.,;:!?)"'\]]/g;
 
 export function staffMessageEmail(opts: {
   reference: string | null;
@@ -261,27 +498,59 @@ export function staffMessageEmail(opts: {
   senderName: string;
 }) {
   const greeting = opts.greetingName ? `Hello ${opts.greetingName},` : "Hello,";
+  const resume = opts.message.match(
+    /https?:\/\/\S*[?&]resume=[0-9a-f-]{36}/i,
+  )?.[0];
+
+  // The resume link becomes a button placed exactly where the link was, so
+  // "pick up where you left off:" is followed by the button, not raw URL text.
+  const linkify = (text: string) =>
+    e(text)
+      .replace(
+        URL_RE,
+        (url) =>
+          `<a href="${url}" style="color:${C.green};font-weight:600;word-break:break-all">${url}</a>`,
+      )
+      .replace(/\n/g, "<br>");
+
   const paragraphs = opts.message
     .split(/\n{2,}/)
-    .map(
-      (p) =>
-        `<p style="margin:0 0 12px">${escapeHtml(p).replace(/\n/g, "<br>")}</p>`,
-    )
+    .filter((p) => p.trim())
+    .map((p) => {
+      if (!resume || !p.includes(resume)) return para(linkify(p));
+      const text = p
+        .split("\n")
+        .filter((line) => line.trim() !== resume)
+        .join("\n")
+        .replace(resume, "")
+        .trim();
+      return `${text ? para(linkify(text), "margin-bottom:14px") : ""}<div style="margin:0 0 22px">${button(resume, "Continue where you left off")}</div>`;
+    })
     .join("");
-  const footer = opts.reference
-    ? `Reference ${escapeHtml(opts.reference)} · reply to this email to reach us.`
-    : "Reply to this email to reach us.";
+
+  const initials = opts.senderName
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return {
     subject: opts.subject,
     html: layout({
-      preheader: opts.message.slice(0, 120),
-      heading: opts.subject,
-      body: `
-        <p style="margin:0 0 12px">${escapeHtml(greeting)}</p>
+      preheader: opts.message.replace(/\s+/g, " ").slice(0, 110),
+      content: `
+        ${para(`<strong style="color:${C.ink}">${e(greeting)}</strong>`)}
         ${paragraphs}
-        <p style="margin:16px 0 0">${escapeHtml(opts.senderName)}<br><span style="color:#6e6e73">NIN Support Atlanta enrolment team</span></p>
-        <p style="margin:16px 0 0;font-size:12px;color:#6e6e73">${footer}</p>`,
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:8px"><tr>
+          <td width="44" height="44" align="center" style="background:${C.greenSoft};color:${C.greenInk};border-radius:999px;font:800 15px/44px ${FONT}">${e(initials)}</td>
+          <td style="padding-left:12px">
+            <p style="margin:0;font:700 15px/1.3 ${FONT};color:${C.ink}">${e(opts.senderName)}</p>
+            <p style="margin:2px 0 0;font:500 13px/1.3 ${FONT};color:${C.muted}">Enrolment team · ${e(OFFICE.name)}</p>
+          </td>
+        </tr></table>
+        ${opts.reference ? `<p style="margin:24px 0 0;font:500 13px/1.6 ${FONT};color:${C.muted}">Your reference: <span style="font-family:${MONO};font-weight:700;color:${C.ink}">${e(opts.reference)}</span></p>` : ""}
+        ${helpCard()}`,
     }),
     text: [
       greeting,
@@ -289,9 +558,9 @@ export function staffMessageEmail(opts: {
       opts.message,
       "",
       opts.senderName,
-      "NIN Support Atlanta enrolment team",
-      "",
-      opts.reference ? `Reference ${opts.reference}` : "",
+      `Enrolment team · ${OFFICE.name}`,
+      opts.reference ? `\nYour reference: ${opts.reference}` : "",
+      textFooter,
     ].join("\n"),
   };
 }
@@ -300,38 +569,58 @@ export function staffMessageEmail(opts: {
 // Team emails
 // ---------------------------------------------------------------------------
 
-function button(href: string, label: string) {
-  return `<a href="${escapeHtml(href)}" style="display:inline-block;background:#075f3c;color:#ffffff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 22px;border-radius:999px">${escapeHtml(label)}</a>`;
-}
-
 export function teamInviteEmail(opts: {
   name: string;
   inviterName: string;
   role: "owner" | "staff";
   link: string;
 }) {
-  const roleLine =
+  const first = opts.name.split(" ")[0];
+  const role =
     opts.role === "owner"
-      ? "As an owner you can also invite and manage team members."
-      : "You'll be able to see new submissions and follow up with applicants.";
+      ? [
+          "Owner",
+          "Work submissions and unfinished forms, and invite, approve and manage team members.",
+        ]
+      : [
+          "Staff",
+          "See new submissions and unfinished forms, and follow up with applicants by call, WhatsApp or email.",
+        ];
+
   return {
-    subject: "You're invited to the NIN Support Atlanta back office",
+    subject: `${opts.inviterName} invited you to the NIN Support Atlanta back office`,
     html: layout({
-      preheader: `${opts.inviterName} invited you to the NIN Support Atlanta back office.`,
-      heading: `Welcome to the team, ${opts.name}`,
-      body: `
-        <p style="margin:0 0 12px">${escapeHtml(opts.inviterName)} has given you access to the NIN Support Atlanta back office. ${escapeHtml(roleLine)}</p>
-        <p style="margin:0 0 20px">Click below to choose your password and sign in. Nobody else will ever know it.</p>
-        <p style="margin:0 0 20px">${button(opts.link, "Accept invite and set password")}</p>
-        <p style="margin:0;font-size:12px;color:#6e6e73">This link works once and expires in 24 hours. If you weren't expecting this, you can ignore it.</p>`,
+      audience: "staff",
+      preheader: `Accept your invite and choose your password. The link works once and expires in 24 hours.`,
+      content: `
+        ${eyebrow("You're invited")}
+        ${heading(`Welcome to the team, ${first}.`)}
+        ${lead(`<strong style="color:${C.ink}">${e(opts.inviterName)}</strong> has given you access to the NIN Support Atlanta back office, where we help applicants complete their NIN enrolment.`)}
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.well};border-radius:14px;margin:0 0 28px"><tr>
+          <td style="padding:18px 22px">
+            <p style="margin:0 0 4px;font:700 11px/1 ${FONT};letter-spacing:.1em;text-transform:uppercase;color:${C.muted}">Your role</p>
+            <p style="margin:6px 0 4px;font:800 18px/1.3 ${FONT};color:${C.ink}">${role[0]}</p>
+            <p style="margin:0;font:400 14px/1.6 ${FONT};color:${C.body}">${e(role[1])}</p>
+          </td>
+        </tr></table>
+        ${button(opts.link, "Accept invite & set password")}
+        <p style="margin:12px 0 28px;font:400 13px/1.6 ${FONT};color:${C.muted}">This link works once and expires in 24 hours.</p>
+        ${callout(`<strong>You choose your own password.</strong> Nobody at ${e(OFFICE.name)} will ever ask you for it, by email, phone or WhatsApp.`, "green")}
+        <p style="margin:24px 0 6px;font:400 12px/1.6 ${FONT};color:${C.muted}">Button not working? Paste this link into your browser:</p>
+        <p style="margin:0;font:400 12px/1.6 ${MONO};color:${C.muted};word-break:break-all">${e(opts.link)}</p>
+        <p style="margin:20px 0 0;font:400 12px/1.6 ${FONT};color:${C.muted}">Weren't expecting this? You can safely ignore it.</p>`,
     }),
     text: [
-      `Welcome to the team, ${opts.name}.`,
+      `Welcome to the team, ${first}.`,
       "",
-      `${opts.inviterName} has given you access to the NIN Support Atlanta back office. ${roleLine}`,
+      `${opts.inviterName} has given you access to the NIN Support Atlanta back office.`,
+      `Your role: ${role[0]}. ${role[1]}`,
       "",
-      "Choose your password and sign in here (works once, expires in 24 hours):",
+      "Accept your invite and choose your password (works once, expires in 24 hours):",
       opts.link,
+      "",
+      "Nobody will ever ask you for your password.",
+      textFooter,
     ].join("\n"),
   };
 }
@@ -343,21 +632,87 @@ export function accessRequestEmail(opts: {
   teamUrl: string;
 }) {
   return {
-    subject: `Access request: ${opts.name}`,
+    subject: `${opts.name} is asking for back-office access`,
     html: layout({
-      preheader: `${opts.name} (${opts.email}) asked for back-office access.`,
-      heading: "Someone asked to join the back office",
-      body: `
-        <p style="margin:0 0 12px"><strong>${escapeHtml(opts.name)}</strong> (${escapeHtml(opts.email)}) is asking for access.</p>
-        ${opts.note ? `<p style="margin:0 0 16px;padding:12px 14px;background:#f5f5f7;border-radius:8px">“${escapeHtml(opts.note)}”</p>` : ""}
-        <p style="margin:0 0 20px">${button(opts.teamUrl, "Review request")}</p>
-        <p style="margin:0;font-size:12px;color:#6e6e73">Only approve people you know. If you don't recognise this request, decline it.</p>`,
+      audience: "staff",
+      preheader: `${opts.name} (${opts.email}) asked to join. Approve or decline in one tap.`,
+      content: `
+        ${eyebrow("Access request", "amber")}
+        ${heading(`${opts.name} wants to join the back office`)}
+        ${lead("Approve them as staff or as an owner, or decline. They'll only get access if you approve, and they'll choose their own password.")}
+        ${details([
+          ["Name", opts.name],
+          ["Email", opts.email],
+        ])}
+        ${
+          opts.note
+            ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:16px"><tr>
+                <td width="4" style="background:${C.green};border-radius:4px"></td>
+                <td style="padding:4px 0 4px 16px;font:italic 400 16px/1.6 ${FONT};color:${C.ink}">“${e(opts.note)}”</td>
+              </tr></table>`
+            : ""
+        }
+        <div style="margin:28px 0 24px">${button(opts.teamUrl, "Review request")}</div>
+        ${callout("<strong>Only approve people you know.</strong> If you don't recognise this person, decline the request.", "amber")}`,
     }),
     text: [
       `${opts.name} (${opts.email}) is asking for back-office access.`,
-      opts.note ? `Note: ${opts.note}` : "",
+      opts.note ? `\n“${opts.note}”` : "",
       "",
       `Review it: ${opts.teamUrl}`,
+      "",
+      "Only approve people you know.",
     ].join("\n"),
   };
+}
+
+// ---------------------------------------------------------------------------
+// Supabase Auth emails (password reset, sign-in link). These are pasted into
+// Supabase -> Authentication -> Emails; {{ .ConfirmationURL }} is filled in by
+// Supabase. Generated by scripts in supabase/templates.
+// ---------------------------------------------------------------------------
+
+export function authEmail(kind: "recovery" | "magic_link" | "invite") {
+  const link = "{{ .ConfirmationURL }}";
+  const copy = {
+    recovery: {
+      eyebrow: "Password reset",
+      heading: "Reset your password",
+      lead: "We received a request to reset the password for your NIN Support Atlanta back-office account. Choose a new one below.",
+      cta: "Choose a new password",
+      note: "Didn't ask for this? You can ignore this email; your password won't change.",
+    },
+    magic_link: {
+      eyebrow: "Sign-in link",
+      heading: "Your sign-in link",
+      lead: "Tap the button below to sign in to the NIN Support Atlanta back office. No password needed.",
+      cta: "Sign in to the back office",
+      note: "Didn't try to sign in? You can safely ignore this email.",
+    },
+    invite: {
+      eyebrow: "You're invited",
+      heading: "Welcome to the team",
+      lead: "You've been given access to the NIN Support Atlanta back office. Accept the invite and choose your password.",
+      cta: "Accept invite & set password",
+      note: "Weren't expecting this? You can safely ignore it.",
+    },
+  }[kind];
+
+  return layout({
+    audience: "staff",
+    preheader: copy.lead,
+    content: `
+      ${eyebrow(copy.eyebrow)}
+      ${heading(copy.heading)}
+      ${lead(copy.lead)}
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 8px 8px 0"><tr>
+        <td style="background:${C.green};border-radius:999px">
+          <a href="${link}" target="_blank" style="display:inline-block;padding:14px 26px;font:700 15px/1 ${FONT};color:#ffffff;text-decoration:none;border-radius:999px">${copy.cta}</a>
+        </td>
+      </tr></table>
+      <p style="margin:12px 0 28px;font:400 13px/1.6 ${FONT};color:${C.muted}">For your security this link works once and expires soon.</p>
+      ${callout(`<strong>We'll never ask for your password.</strong> ${copy.note}`, "green")}
+      <p style="margin:24px 0 6px;font:400 12px/1.6 ${FONT};color:${C.muted}">Button not working? Paste this link into your browser:</p>
+      <p style="margin:0;font:400 12px/1.6 ${MONO};color:${C.muted};word-break:break-all">${link}</p>`,
+  });
 }

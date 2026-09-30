@@ -1,6 +1,5 @@
 import React from "react";
-import { NimcLogo } from "./logos/NimcLogo";
-import { NinSupportLogo } from "./logos/NinSupportLogo";
+import { NinSupportLogo, SupportedByNimc } from "./logos/NinSupportLogo";
 import { OFFICE_INFO } from "../data/websiteContent";
 import { PageId } from "../types";
 import {
@@ -66,16 +65,16 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         <div className="grid gap-10 lg:grid-cols-[1.3fr_0.8fr_1fr_0.9fr]">
           <div>
             <div className="flex items-center gap-3">
-              <NinSupportLogo variant="full" />
+              <NinSupportLogo variant="full" className="h-16" />
             </div>
             <p className="mt-4 max-w-sm text-sm leading-7 text-stone-600">
               Atlanta office support for Nigerian National Identification Number
               services, including biometric enrolment and NIN slip assistance.
             </p>
-            <div className="mt-5 flex items-center gap-3">
-              <NimcLogo size="sm" showSubtitle={false} className="opacity-80" />
+            <div className="mt-5 flex flex-col gap-1.5">
+              <SupportedByNimc />
               <div className="text-xs text-stone-500">
-                Service references the NIMC diaspora enrolment process.
+                Following the NIMC diaspora enrolment process.
               </div>
             </div>
           </div>

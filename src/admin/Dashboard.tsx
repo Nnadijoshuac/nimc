@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
-import { NimcLogo } from "../components/logos/NimcLogo";
+import { NinSupportLogo } from "../components/logos/NinSupportLogo";
 import { CheckCircle, FileText, LogOut, Users } from "../components/icons";
 import { AdminProvider } from "./context";
 import { OverviewView } from "./OverviewView";
@@ -190,7 +190,7 @@ export const Dashboard: React.FC<{ session: Session }> = ({ session }) => {
         <header className="sticky top-0 z-30 bg-white/95 shadow-[0_1px_0_rgba(16,24,40,0.06),0_6px_16px_-10px_rgba(16,24,40,0.25)] backdrop-blur-md">
           <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 md:h-auto md:pt-3">
             <div className="flex items-center gap-3">
-              <NimcLogo size="sm" showSubtitle={false} />
+              <NinSupportLogo variant="mark" className="h-10 w-10" />
               <div>
                 <div className="text-sm font-bold">NIN Support back office</div>
                 <div className="hidden text-xs text-stone-500 md:block">

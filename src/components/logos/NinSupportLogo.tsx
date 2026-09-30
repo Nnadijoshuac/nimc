@@ -1,32 +1,51 @@
 import React from "react";
+import { NimcLogo } from "./NimcLogo";
 
+/**
+ * The NIN Support Atlanta brand. Assets live in public/brand so they have
+ * stable URLs that emails can load too.
+ *
+ *   full  emblem + NINSUPPORTATLANTA wordmark (headers, footer)
+ *   mark  emblem only, square (compact spots: dialogs, admin, favicon)
+ */
 interface NinSupportLogoProps {
   className?: string;
-  variant?: "full" | "icon-only" | "light" | "dark";
+  variant?: "full" | "mark" | "icon-only";
 }
 
 export const NinSupportLogo: React.FC<NinSupportLogoProps> = ({
   className = "",
   variant = "full",
-}) => {
-  return (
-    <div
-      className={`inline-flex items-center gap-2.5 select-none ${className}`}
-      role="img"
-      aria-label="NIN Support Atlanta"
-    >
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#075f3c] text-[11px] font-bold tracking-tight text-white shadow-sm">
-        NIN
-      </div>
-
-      {variant !== "icon-only" && (
-        <div className="flex flex-col justify-center text-left leading-tight">
-          <span className="text-sm font-semibold text-stone-950">
-            NIN Support
-          </span>
-          <span className="text-xs font-medium text-stone-500">Atlanta</span>
-        </div>
-      )}
-    </div>
+}) =>
+  variant === "full" ? (
+    <img
+      src="/brand/logo-full.png"
+      alt="NIN Support Atlanta"
+      width={600}
+      height={269}
+      className={`h-12 w-auto select-none object-contain ${className}`}
+      draggable={false}
+    />
+  ) : (
+    <img
+      src="/brand/logo-mark.png"
+      alt="NIN Support Atlanta"
+      width={256}
+      height={256}
+      className={`h-10 w-10 select-none object-contain ${className}`}
+      draggable={false}
+    />
   );
-};
+
+/** "Supported by NIMC": the partner mark, always secondary to our own logo. */
+export const SupportedByNimc: React.FC<{
+  className?: string;
+  label?: string;
+}> = ({ className = "", label = "Supported by" }) => (
+  <div className={`inline-flex items-center gap-2 ${className}`}>
+    <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-500">
+      {label}
+    </span>
+    <NimcLogo size="sm" showSubtitle={false} />
+  </div>
+);

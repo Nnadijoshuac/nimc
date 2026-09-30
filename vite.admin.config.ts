@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
   return {
     root: path.resolve(__dirname, "admin"),
     envDir: __dirname, // read the same .env.local as the public site
-    publicDir: false,
+    publicDir: path.resolve(__dirname, "public"),
     plugins: [hugeiconsCaseFix(), react(), tailwindcss()],
     resolve: {
       alias: {

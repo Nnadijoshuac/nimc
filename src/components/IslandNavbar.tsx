@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NimcLogo } from "./logos/NimcLogo";
+import { NinSupportLogo } from "./logos/NinSupportLogo";
 import { AccessibilityToolbar } from "./AccessibilityToolbar";
 import { PageId, AccessibilitySettings } from "../types";
 import {
@@ -61,7 +61,7 @@ export const IslandNavbar: React.FC<IslandNavbarProps> = ({
           className="flex items-center justify-center hover:scale-[1.02]"
           aria-label="Go to homepage"
         >
-          <NimcLogo size="responsive" showSubtitle={false} />
+          <NinSupportLogo variant="full" className="h-12 sm:h-14 lg:h-16" />
         </button>
 
         <div className="flex items-center gap-2 rounded-full border border-white/70 bg-white/78 px-2 py-2 shadow-[0_18px_50px_rgba(29,29,31,0.10)] backdrop-blur-2xl">

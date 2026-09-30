@@ -191,7 +191,7 @@ export const PreEnrollmentModal: React.FC<PreEnrollmentModalProps> = ({
       <div className="paper-panel my-6 w-full max-w-3xl overflow-hidden">
         <div className="flex items-center justify-between border-b border-[#eeeeef] bg-[#fbfbfd] px-6 py-4">
           <div className="flex items-center gap-3">
-            <NimcLogo size="sm" showSubtitle={false} />
+            <NinSupportLogo variant="mark" className="h-11 w-11" />
             <div>
               <h3
                 id="pre-enrollment-title"
@@ -397,7 +397,10 @@ export const PreEnrollmentModal: React.FC<PreEnrollmentModalProps> = ({
                     </div>
                   </div>
                   <div className="text-right">
-                    <NinSupportLogo variant="icon-only" />
+                    <NinSupportLogo
+                      variant="mark"
+                      className="ml-auto h-12 w-12"
+                    />
                     <div className="mt-1 text-[10px] font-bold text-stone-600">
                       Atlanta center
                     </div>

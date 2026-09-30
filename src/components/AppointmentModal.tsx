@@ -8,7 +8,7 @@ import {
   ArrowRight,
 } from "./icons";
 import { OFFICE_INFO } from "../data/websiteContent";
-import { NimcLogo } from "./logos/NimcLogo";
+import { NinSupportLogo } from "./logos/NinSupportLogo";
 import { FormError, Honeypot, Spinner } from "./FormBits";
 import { SubmissionError, todayInAtlanta } from "../lib/forms";
 import {
@@ -138,7 +138,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
       <div className="paper-panel my-6 w-full max-w-xl overflow-hidden">
         <div className="flex items-center justify-between border-b border-[#eeeeef] bg-[#fbfbfd] px-6 py-4">
           <div className="flex items-center gap-3">
-            <NimcLogo size="sm" showSubtitle={false} />
+            <NinSupportLogo variant="mark" className="h-11 w-11" />
             <div>
               <h3
                 id="booking-title"
