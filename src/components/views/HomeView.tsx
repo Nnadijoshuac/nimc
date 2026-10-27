@@ -13,11 +13,7 @@ import {
   Users,
   ShieldCheck,
 } from "../icons";
-import {
-  ENROLLMENT_STEPS,
-  OFFICE_INFO,
-  STATUTORY_FEES,
-} from "../../data/websiteContent";
+import { ENROLLMENT_STEPS, OFFICE_INFO } from "../../data/websiteContent";
 import { PageId } from "../../types";
 import heroNigerianCouple from "../../assets/hero-nigerian-couple.jpg";
 import heroTraditionalCouple from "../../assets/hero-traditional-couple.jpg";
@@ -417,42 +413,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section
-        aria-labelledby="fees-title"
-        className="gov-container pb-16 sm:pb-20"
-      >
-        <div className="mb-8 text-center">
-          <div className="kicker mx-auto">Fees</div>
-          <h2
-            id="fees-title"
-            className="mt-3 text-4xl font-semibold tracking-[-0.03em] text-stone-950 sm:text-5xl"
-          >
-            Know the cost before you come in.
-          </h2>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          {STATUTORY_FEES.map((item) => (
-            <div
-              key={item.service}
-              className="rounded-[1.5rem] bg-white p-6 shadow-sm ring-1 ring-black/5"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <h3 className="text-lg font-semibold text-stone-950">
-                  {item.service}
-                </h3>
-                <div className="shrink-0 text-3xl font-semibold text-[#075f3c]">
-                  {item.fee}
-                </div>
-              </div>
-              <p className="mt-4 text-sm leading-7 text-stone-600">
-                {item.notes}
-              </p>
-            </div>
-          ))}
         </div>
       </section>
 

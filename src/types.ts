@@ -66,9 +66,3 @@ export interface AccessibilitySettings {
   reducedMotion: boolean;
   screenReaderGuide?: boolean;
 }
-
-export interface StatutoryFee {
-  service: string;
-  fee: string;
-  notes: string;
-}

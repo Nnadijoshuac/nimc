@@ -3,7 +3,6 @@ import {
   FaqItem,
   EnrollmentStep,
   PolicySection,
-  StatutoryFee,
 } from "../types";
 
 export const OFFICE_INFO: OfficeContact = {
@@ -208,7 +207,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     category: "retrieval",
     bulletPoints: [
       "Visit our NIN Support Atlanta Enrollment Center and provide your registered telephone number, date of birth, or fingerprint verification — your NIN will be retrieved for you immediately.",
-      "Individuals in Nigeria can retrieve their NIN instantly using USSD code *346# on any GSM network (nominal standard telecom charge applies).",
+      "Individuals in Nigeria can retrieve their NIN instantly using USSD code *346# on any GSM network.",
       "Retrieval can also be performed using the phone number supplied during initial enrollment or via biographical key information search.",
     ],
   },
@@ -216,7 +215,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: "lost-nin-slip",
     question: "I have lost my NIN slip, how can I obtain another one?",
     answer:
-      "If your NIN slip is lost, damaged, or misplaced, you can obtain an authentic reprint at our Atlanta office. Applicants pay a nominal statutory token fee for slip verification and printing. Once your identity is verified and payment confirmed, your official slip will be re-issued and printed immediately on the spot.",
+      "If your NIN slip is lost, damaged, or misplaced, you can obtain an authentic reprint at our Atlanta office. Once your identity is verified, your official slip will be re-issued and printed immediately on the spot.",
     category: "retrieval",
     referenceLink: {
       text: "View official NIMC Diaspora Enrolment Fact Sheet",
@@ -396,32 +395,5 @@ export const REQUIRED_DOCUMENTS = [
       "Parent's/Guardian's NIN, Child's Birth Certificate, and Parent's consent.",
     required: false,
     category: "minor",
-  },
-];
-
-export const STATUTORY_FEES: StatutoryFee[] = [
-  {
-    service: "Adult First-Time Enrolment (16+)",
-    fee: "$50.00",
-    notes:
-      "Includes 10-finger biometric capture, facial portrait, and standard official NIN slip issuance.",
-  },
-  {
-    service: "Minor & Child Enrolment (0–15)",
-    fee: "$40.00",
-    notes:
-      "Requires verified parent/guardian NIN and birth certificate. Essential for Nigerian passport processing.",
-  },
-  {
-    service: "Demographic Data Modification",
-    fee: "$50.00",
-    notes:
-      "Updates to phone numbers, address, marital status, or surname correction with document verification.",
-  },
-  {
-    service: "Lost Slip Retrieval & Reprint",
-    fee: "$20.00",
-    notes:
-      "Biometric database lookup against the National Identity Database (NIDB) and immediate slip reprint.",
   },
 ];
