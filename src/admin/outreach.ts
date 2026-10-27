@@ -56,7 +56,7 @@ export function draftEmailTemplates(d: Draft): EmailTemplate[] {
 Your details are saved, so you can pick up right where you left off:
 ${link}
 
-Or simply reply to this email or call us on +1 (404) 563-1228 and we'll help you complete it.`,
+Or simply reply to this email or call us on +1 (404) 563-1228 or +1 (404) 980-6937 and we'll help you complete it.`,
     },
     {
       label: "Finish in 2 minutes",
@@ -105,7 +105,7 @@ export function submissionEmailTemplates(s: Submission): EmailTemplate[] {
       message: `Thank you for choosing NIN Support Atlanta. To complete your NIN enrolment, please:
 
 1. Pay the diaspora NIN fee through the official portal and keep the receipt.
-2. Visit us at 1 Glenlake Parkway, Suite 702, Atlanta, GA 30328 with your valid Nigerian passport (or other accepted ID) and the payment receipt.
+2. Visit us at 7046 Covington Highway, Suite F, Lithonia, GA 30058 with your valid Nigerian passport (or other accepted ID) and the payment receipt.
 
 We are open Monday to Friday, 9am to 5pm. Reply to this email if you would like us to book a time for you.`,
     },

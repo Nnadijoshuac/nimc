@@ -1,7 +1,6 @@
 import React from "react";
 import {
   MapPin,
-  Calendar,
   PhoneCall,
   ArrowRight,
   Clock,
@@ -29,7 +28,6 @@ import heroNewbornWelcome from "../../assets/hero-newborn-welcome.jpg";
 
 interface HomeViewProps {
   onNavigate: (page: PageId) => void;
-  onOpenBooking: () => void;
   onOpenPreEnroll: () => void;
 }
 
@@ -44,7 +42,7 @@ const servicePanels = [
     title: "Children and family visits",
     body: "Prepare minors and family groups with the right guardian documents before arriving.",
     icon: Users,
-    action: "Book family visit",
+    action: "Call to book family visit",
   },
   {
     title: "Slip retrieval",
@@ -120,7 +118,6 @@ const SLIDE_DURATION_MS = 7000;
 
 export const HomeView: React.FC<HomeViewProps> = ({
   onNavigate,
-  onOpenBooking,
   onOpenPreEnroll,
 }) => {
   const [activeSlide, setActiveSlide] = React.useState(0);
@@ -219,13 +216,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 <FileText className="h-4 w-4" />
                 Start pre-enrolment
               </button>
-              <button
-                onClick={onOpenBooking}
+              <a
+                href={`tel:${OFFICE_INFO.primaryPhone}`}
                 className="btn-secondary px-6 py-3.5 text-sm"
               >
-                <Calendar className="h-4 w-4" />
-                Book visit
-              </button>
+                <PhoneCall className="h-4 w-4" />
+                Call to book
+              </a>
               <button
                 onClick={() => onNavigate("how-to-enroll")}
                 className="inline-flex items-center justify-center gap-1.5 px-2 py-3 text-sm font-semibold text-[#075f3c] hover:underline"
@@ -237,7 +234,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
             <div className="mt-10 grid max-w-2xl gap-px overflow-hidden rounded-2xl bg-black/[0.06] shadow-sm ring-1 ring-black/5 sm:grid-cols-3">
               {[
-                ["Location", "1 Glenlake Parkway, Suite 702"],
+                ["Location", "7046 Covington Highway, Suite F"],
                 ["Process", "Pre-enrolment, review, biometrics"],
                 ["Support", "NIN slip retrieval and guidance"],
               ].map(([label, body]) => (
@@ -338,7 +335,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
               index === 0
                 ? onOpenPreEnroll
                 : index === 1
-                  ? onOpenBooking
+                  ? () => {
+                      window.location.href = `tel:${OFFICE_INFO.primaryPhone}`;
+                    }
                   : () => onNavigate("faq");
 
             return (
@@ -468,8 +467,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
               Come in prepared. Leave with answers.
             </h2>
             <p className="mt-4 text-sm leading-7 text-stone-600">
-              The center is near GA-400 and I-285. Bring your completed forms,
-              identification, and payment confirmation.
+              The center is on Covington Highway in Lithonia, close to I-20 and
+              I-285. Bring your completed forms, identification, and payment
+              confirmation.
             </p>
 
             <div className="mt-8 space-y-5 text-sm">
@@ -491,7 +491,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     Monday-Friday, 9:00 AM-5:00 PM EST
                   </div>
                   <div className="text-stone-600">
-                    Saturday appointments may be available by prior booking.
+                    Saturday visits by phone arrangement only.
                   </div>
                 </div>
               </div>
@@ -511,13 +511,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </div>
             </div>
 
-            <button
-              onClick={onOpenBooking}
+            <a
+              href={`tel:${OFFICE_INFO.primaryPhone}`}
               className="btn-primary mt-8 px-5 py-3 text-sm"
             >
-              <Calendar className="h-4 w-4" />
-              Book office visit
-            </button>
+              <PhoneCall className="h-4 w-4" />
+              Call to book your visit
+            </a>
           </div>
 
           <div className="overflow-hidden rounded-[1.5rem] bg-white shadow-sm ring-1 ring-black/5">

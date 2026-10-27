@@ -6,7 +6,6 @@ import {
   Menu,
   X,
   PhoneCall,
-  CalendarCheck,
   FileText,
   ShieldCheck,
   HelpCircle,
@@ -18,7 +17,6 @@ import { OFFICE_INFO } from "../data/websiteContent";
 interface IslandNavbarProps {
   currentPage: PageId;
   onNavigate: (page: PageId) => void;
-  onOpenBooking: () => void;
   accessibilitySettings: AccessibilitySettings;
   onUpdateAccessibility: (settings: Partial<AccessibilitySettings>) => void;
   pageTitle: string;
@@ -28,7 +26,6 @@ interface IslandNavbarProps {
 export const IslandNavbar: React.FC<IslandNavbarProps> = ({
   currentPage,
   onNavigate,
-  onOpenBooking,
   accessibilitySettings,
   onUpdateAccessibility,
   pageTitle,
@@ -99,19 +96,11 @@ export const IslandNavbar: React.FC<IslandNavbarProps> = ({
 
           <a
             href={`tel:${OFFICE_INFO.primaryPhone}`}
-            className="hidden h-10 w-10 items-center justify-center rounded-full bg-[#f5f5f7] text-stone-900 hover:bg-[#e8e8ed] sm:inline-flex"
-            aria-label="Call Atlanta office"
-          >
-            <PhoneCall className="h-4 w-4" />
-          </a>
-
-          <button
-            onClick={onOpenBooking}
             className="btn-primary hidden whitespace-nowrap px-4 py-2.5 text-sm sm:inline-flex"
           >
-            <CalendarCheck className="h-4 w-4" />
-            <span>Book visit</span>
-          </button>
+            <PhoneCall className="h-4 w-4" />
+            <span>Call to book</span>
+          </a>
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -155,23 +144,13 @@ export const IslandNavbar: React.FC<IslandNavbarProps> = ({
               })}
             </nav>
 
-            <div className="mt-2 grid grid-cols-2 gap-2 border-t border-[#eeeeef] pt-2">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenBooking();
-                }}
-                className="btn-primary py-2.5 text-xs"
-              >
-                <CalendarCheck className="h-3.5 w-3.5" />
-                Book visit
-              </button>
+            <div className="mt-2 grid gap-2 border-t border-[#eeeeef] pt-2">
               <a
                 href={`tel:${OFFICE_INFO.primaryPhone}`}
-                className="flex items-center justify-center gap-1.5 rounded-full bg-[#f5f5f7] px-3 py-2.5 text-xs font-bold text-stone-900 hover:bg-[#e8e8ed]"
+                className="btn-primary py-2.5 text-xs"
               >
                 <PhoneCall className="h-3.5 w-3.5" />
-                Call
+                Call to book {OFFICE_INFO.primaryPhone}
               </a>
             </div>
           </div>

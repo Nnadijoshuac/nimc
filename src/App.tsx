@@ -6,9 +6,8 @@ import { HomeView } from "./components/views/HomeView";
 import { HowToEnrollView } from "./components/views/HowToEnrollView";
 import { FaqView } from "./components/views/FaqView";
 import { DataProtectionView } from "./components/views/DataProtectionView";
-import { AppointmentModal } from "./components/AppointmentModal";
 import { PreEnrollmentModal } from "./components/PreEnrollmentModal";
-import { PhoneCall, Calendar, Download } from "./components/icons";
+import { PhoneCall, Download } from "./components/icons";
 import { OFFICE_INFO } from "./data/websiteContent";
 import { installAnalytics, trackPageView } from "./lib/analytics";
 import { loadDraft } from "./lib/forms";
@@ -23,11 +22,7 @@ const PAGE_PATHS: Record<PageId, string> = {
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageId>("home");
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isPreEnrollOpen, setIsPreEnrollOpen] = useState(false);
-  const [resumeAppointment, setResumeAppointment] = useState<ResumeData | null>(
-    null,
-  );
   const [resumePreEnroll, setResumePreEnroll] = useState<ResumeData | null>(
     null,
   );
@@ -60,14 +55,14 @@ export default function App() {
         );
         return;
       }
-      const resume = { draftId, data: draft.data };
       if (draft.kind === "appointment") {
-        setResumeAppointment(resume);
-        setIsBookingOpen(true);
-      } else {
-        setResumePreEnroll(resume);
-        setIsPreEnrollOpen(true);
+        setResumeNotice(
+          `Visits are now arranged by phone only. Please call ${OFFICE_INFO.primaryPhone} to book.`,
+        );
+        return;
       }
+      setResumePreEnroll({ draftId, data: draft.data });
+      setIsPreEnrollOpen(true);
     });
   }, []);
 
@@ -108,7 +103,7 @@ export default function App() {
     home: {
       title: "NIN Support Atlanta | NIMC Diaspora Enrolment Center",
       summary:
-        "Official licensed partner for National Identification Number issuance. Visit 1 Glenlake Parkway, Suite 702, Atlanta for on the spot NIN biometrics capture.",
+        "Official licensed partner for National Identification Number issuance. Visit 7046 Covington Highway, Suite F, Lithonia, GA for on the spot NIN biometrics capture.",
     },
     "how-to-enroll": {
       title: "How to Enroll for your NIN in Diaspora",
@@ -141,7 +136,6 @@ export default function App() {
       <IslandNavbar
         currentPage={currentPage}
         onNavigate={(page) => setCurrentPage(page)}
-        onOpenBooking={() => setIsBookingOpen(true)}
         accessibilitySettings={accessibilitySettings}
         onUpdateAccessibility={updateAccessibility}
         pageTitle={pageMeta[currentPage].title}
@@ -156,21 +150,17 @@ export default function App() {
         {currentPage === "home" && (
           <HomeView
             onNavigate={(page) => setCurrentPage(page)}
-            onOpenBooking={() => setIsBookingOpen(true)}
             onOpenPreEnroll={() => setIsPreEnrollOpen(true)}
           />
         )}
 
         {currentPage === "how-to-enroll" && (
           <HowToEnrollView
-            onOpenBooking={() => setIsBookingOpen(true)}
             onOpenPreEnroll={() => setIsPreEnrollOpen(true)}
           />
         )}
 
-        {currentPage === "faq" && (
-          <FaqView onOpenBooking={() => setIsBookingOpen(true)} />
-        )}
+        {currentPage === "faq" && <FaqView />}
 
         {currentPage === "data-protection" && <DataProtectionView />}
       </main>
@@ -188,35 +178,17 @@ export default function App() {
           Pre-Enroll
         </button>
 
-        <button
-          onClick={() => setIsBookingOpen(true)}
-          className="btn-primary flex-1 py-2 px-2.5 text-xs"
-        >
-          <Calendar className="w-3.5 h-3.5 text-emerald-400" />
-          Book Visit
-        </button>
-
         <a
           href={`tel:${OFFICE_INFO.primaryPhone}`}
-          className="p-2 rounded-full bg-[#b4232a] text-white flex items-center justify-center"
-          aria-label="Call Atlanta Office"
+          className="btn-primary flex-1 py-2 px-2.5 text-xs"
         >
-          <PhoneCall className="w-4 h-4" />
+          <PhoneCall className="w-3.5 h-3.5 text-emerald-400" />
+          Call to book
         </a>
       </div>
 
       {/* Footer */}
       <Footer onNavigate={(page) => setCurrentPage(page)} />
-
-      {/* Appointment Booking Modal */}
-      <AppointmentModal
-        isOpen={isBookingOpen}
-        resume={resumeAppointment}
-        onClose={() => {
-          setIsBookingOpen(false);
-          setResumeAppointment(null);
-        }}
-      />
 
       {/* Pre-Enrollment Slip Generator Modal */}
       <PreEnrollmentModal

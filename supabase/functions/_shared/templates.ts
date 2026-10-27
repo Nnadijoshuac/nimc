@@ -8,10 +8,13 @@
 export const OFFICE = {
   name: "NIN Support Atlanta",
   longName: "NIN Support Atlanta Diaspora Enrolment Center",
-  address: "1 Glenlake Parkway, Suite 702",
-  city: "Atlanta, GA 30328",
+  company: "Gateman Emissions LLC",
+  address: "7046 Covington Highway, Suite F",
+  city: "Lithonia, GA 30058",
   phone: "+1 (404) 563-1228",
   phoneHref: "tel:+14045631228",
+  phone2: "+1 (404) 980-6937",
+  phone2Href: "tel:+14049806937",
   email: "info@ninsupportatalanta.com",
   website: "https://www.ninsupportatalanta.com",
   websiteLabel: "ninsupportatalanta.com",
@@ -240,9 +243,10 @@ function layout(opts: {
         <!-- Footer -->
         <tr><td align="center" style="padding:28px 16px 0">
           <p style="margin:0 0 6px;font:700 13px/1.5 ${FONT};color:${C.ink}">${e(OFFICE.longName)}</p>
-          <p style="margin:0 0 6px;font:400 13px/1.6 ${FONT};color:${C.muted}">${e(OFFICE.address)}, ${e(OFFICE.city)}<br>${e(OFFICE.hours)}</p>
+          <p style="margin:0 0 6px;font:400 13px/1.6 ${FONT};color:${C.muted}">${e(OFFICE.company)}<br>${e(OFFICE.address)}, ${e(OFFICE.city)}<br>${e(OFFICE.hours)}</p>
           <p style="margin:0 0 16px;font:500 13px/1.6 ${FONT};color:${C.muted}">
             <a href="${OFFICE.phoneHref}" style="color:${C.green};text-decoration:none;white-space:nowrap">${e(OFFICE.phone)}</a>
+            &nbsp;·&nbsp; <a href="${OFFICE.phone2Href}" style="color:${C.green};text-decoration:none;white-space:nowrap">${e(OFFICE.phone2)}</a>
             &nbsp;·&nbsp; <a href="mailto:${OFFICE.email}" style="color:${C.green};text-decoration:none">${e(OFFICE.email)}</a>
             &nbsp;·&nbsp; <a href="${OFFICE.website}" style="color:${C.green};text-decoration:none">${e(OFFICE.websiteLabel)}</a>
           </p>
@@ -266,8 +270,9 @@ const textFooter = [
   "",
   "—",
   OFFICE.longName,
+  OFFICE.company,
   `${OFFICE.address}, ${OFFICE.city}`,
-  `${OFFICE.phone} · ${OFFICE.email} · ${OFFICE.websiteLabel}`,
+  `${OFFICE.phone} · ${OFFICE.phone2} · ${OFFICE.email} · ${OFFICE.websiteLabel}`,
 ].join("\n");
 
 const textRows = (rows: Row[]) =>

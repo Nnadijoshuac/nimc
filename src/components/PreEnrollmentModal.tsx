@@ -267,8 +267,8 @@ export const PreEnrollmentModal: React.FC<PreEnrollmentModalProps> = ({
                     <p className="leading-6">
                       Enter these exactly as they appear on your Nigerian
                       passport. You'll get a printable pre-enrolment slip to
-                      bring with your ID and payment receipt to 1 Glenlake
-                      Parkway, Suite 702.
+                      bring with your ID and payment receipt to 7046 Covington
+                      Highway, Suite F, Lithonia.
                     </p>
                   </div>
 

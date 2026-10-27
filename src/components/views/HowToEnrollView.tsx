@@ -9,7 +9,7 @@ import {
   Download,
   CheckSquare,
   Square,
-  Calendar,
+  PhoneCall,
   ShieldAlert,
   Clock,
 } from "../icons";
@@ -20,12 +20,10 @@ import {
 } from "../../data/websiteContent";
 
 interface HowToEnrollViewProps {
-  onOpenBooking: () => void;
   onOpenPreEnroll: () => void;
 }
 
 export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
-  onOpenBooking,
   onOpenPreEnroll,
 }) => {
   const [checkedDocs, setCheckedDocs] = useState<Record<number, boolean>>({});
@@ -66,13 +64,13 @@ export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
                 <Download className="h-4 w-4" />
                 Fill pre-enrolment form
               </button>
-              <button
-                onClick={onOpenBooking}
+              <a
+                href={`tel:${OFFICE_INFO.primaryPhone}`}
                 className="btn-secondary px-5 py-3 text-xs sm:text-sm"
               >
-                <Calendar className="h-4 w-4" />
-                Schedule Atlanta appointment
-              </button>
+                <PhoneCall className="h-4 w-4" />
+                Call to book your visit
+              </a>
             </div>
           </div>
 
@@ -84,8 +82,8 @@ export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-stone-950/75 to-transparent p-5 text-xs text-white">
-              Authorized identity verification desk - One Glenlake Parkway,
-              Suite 702
+              Authorized identity verification desk - 7046 Covington Highway,
+              Suite F, Lithonia
             </div>
           </div>
         </div>
@@ -108,12 +106,13 @@ export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
             </p>
           </div>
         </div>
-        <button
-          onClick={onOpenBooking}
+        <a
+          href={`tel:${OFFICE_INFO.primaryPhone}`}
           className="btn-secondary shrink-0 px-4 py-2 text-xs"
         >
-          Book office visit
-        </button>
+          <PhoneCall className="h-3.5 w-3.5" />
+          Call to book
+        </a>
       </div>
 
       <section aria-labelledby="steps-section-title" className="space-y-6">
@@ -199,13 +198,13 @@ export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
                     )}
 
                     {step.stepNumber === 3 && (
-                      <button
-                        onClick={onOpenBooking}
+                      <a
+                        href={`tel:${OFFICE_INFO.primaryPhone}`}
                         className="btn-primary w-full px-3 py-2 text-xs"
                       >
-                        <Calendar className="h-3.5 w-3.5" />
-                        Reserve time slot
-                      </button>
+                        <PhoneCall className="h-3.5 w-3.5" />
+                        Call to book a time
+                      </a>
                     )}
 
                     {![1, 3].includes(step.stepNumber) && (
@@ -287,12 +286,13 @@ export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
             <Clock className="h-4 w-4 text-[#0a7a4b]" />
             Original documents are scanned and returned during your visit.
           </div>
-          <button
-            onClick={onOpenBooking}
+          <a
+            href={`tel:${OFFICE_INFO.primaryPhone}`}
             className="btn-primary px-5 py-2.5 text-xs"
           >
-            Book Atlanta appointment
-          </button>
+            <PhoneCall className="h-3.5 w-3.5" />
+            Call to book
+          </a>
         </div>
       </section>
     </div>

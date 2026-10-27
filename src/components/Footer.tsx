@@ -119,6 +119,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <div className="flex items-start gap-2.5">
                 <MapPin className="mt-1 h-4 w-4 shrink-0 text-[#0a7a4b]" />
                 <div>
+                  <div className="text-stone-950">
+                    {OFFICE_INFO.companyName}
+                  </div>
                   <div className="font-semibold text-stone-950">
                     {OFFICE_INFO.address}
                   </div>

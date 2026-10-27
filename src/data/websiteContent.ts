@@ -7,21 +7,21 @@ import {
 } from "../types";
 
 export const OFFICE_INFO: OfficeContact = {
-  companyName: "NIN Support Atlanta",
+  companyName: "Gateman Emissions LLC",
   tagline: "NIMC diaspora enrolment support in Atlanta",
   partnershipText:
     "Licensed diaspora enrolment partner supporting National Identity Management Commission (NIMC) services",
-  address: "1 GLENLAKE PARKWAY, SUITE 702",
-  suite: "SUITE 702",
-  cityStateZip: "ATLANTA, 30328, GEORGIA",
+  address: "7046 COVINGTON HIGHWAY, SUITE F",
+  suite: "SUITE F",
+  cityStateZip: "LITHONIA, GA 30058",
   primaryPhone: "+1 (404) 563-1228",
-  secondaryPhone: "+1 (678) 508-7689",
+  secondaryPhone: "+1 (404) 980-6937",
   primaryEmail: "info@ninsupportatalanta.com",
   secondaryEmail: "soniaedwinbiayeibo@gmail.com",
   website: "www.ninsupportatalanta.com",
   hours: {
     weekdays: "Monday – Friday: 9:00 AM – 5:00 PM EST",
-    saturday: "Saturday: 10:00 AM – 3:00 PM EST (By Appointment)",
+    saturday: "Saturday: 10:00 AM – 3:00 PM EST (By phone appointment)",
     sunday: "Sunday: Closed",
   },
   dpo: {
@@ -67,7 +67,7 @@ export const ENROLLMENT_STEPS: EnrollmentStep[] = [
     stepNumber: 3,
     title: "Visit Atlanta Office with Supporting Documents",
     shortDesc:
-      "Walk into 1 Glenlake Pkwy, Suite 702 with your ID, filled form, and receipt.",
+      "Walk into 7046 Covington Hwy, Suite F with your ID, filled form, and receipt.",
     fullDesc:
       "Walk into our dedicated NIN Enrollment center in Atlanta with your valid primary identification document, your filled pre-enrollment form, and your payment confirmation receipt.",
     requiredActions: [
@@ -75,7 +75,7 @@ export const ENROLLMENT_STEPS: EnrollmentStep[] = [
       "Bring completed pre-enrollment form",
       "Bring printed online payment receipt",
     ],
-    tips: "Walk-ins may be accommodated during standard business hours; booking an appointment helps reduce waiting time.",
+    tips: "Walk-ins may be accommodated during standard business hours; call ahead to book your visit and reduce waiting time.",
     badge: "Step 3: Arrival",
   },
   {

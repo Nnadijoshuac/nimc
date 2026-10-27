@@ -6,16 +6,11 @@ import {
   ChevronUp,
   PhoneCall,
   ExternalLink,
-  Calendar,
   X,
 } from "../icons";
 import { FAQ_ITEMS, OFFICE_INFO } from "../../data/websiteContent";
 
-interface FaqViewProps {
-  onOpenBooking: () => void;
-}
-
-export const FaqView: React.FC<FaqViewProps> = ({ onOpenBooking }) => {
+export const FaqView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({
@@ -228,8 +223,8 @@ export const FaqView: React.FC<FaqViewProps> = ({ onOpenBooking }) => {
             Need help before visiting?
           </h3>
           <p className="mt-1 text-sm leading-6 text-stone-700">
-            Call the Atlanta office or reserve a time for in-person biometric
-            capture.
+            Visits are booked by phone only. Call the office to arrange your
+            in-person biometric capture.
           </p>
         </div>
 
@@ -241,13 +236,13 @@ export const FaqView: React.FC<FaqViewProps> = ({ onOpenBooking }) => {
             <PhoneCall className="h-3.5 w-3.5" />
             {OFFICE_INFO.primaryPhone}
           </a>
-          <button
-            onClick={onOpenBooking}
+          <a
+            href={`tel:${OFFICE_INFO.secondaryPhone}`}
             className="btn-secondary px-4 py-2.5 text-xs"
           >
-            <Calendar className="h-3.5 w-3.5" />
-            Book visit
-          </button>
+            <PhoneCall className="h-3.5 w-3.5" />
+            {OFFICE_INFO.secondaryPhone}
+          </a>
         </div>
       </section>
     </div>
