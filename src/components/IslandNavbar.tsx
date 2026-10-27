@@ -99,7 +99,7 @@ export const IslandNavbar: React.FC<IslandNavbarProps> = ({
             className="btn-primary hidden whitespace-nowrap px-4 py-2.5 text-sm sm:inline-flex"
           >
             <PhoneCall className="h-4 w-4" />
-            <span>Call to book</span>
+            <span>Call us</span>
           </a>
 
           <button
@@ -150,7 +150,7 @@ export const IslandNavbar: React.FC<IslandNavbarProps> = ({
                 className="btn-primary py-2.5 text-xs"
               >
                 <PhoneCall className="h-3.5 w-3.5" />
-                Call to book {OFFICE_INFO.primaryPhone}
+                Call {OFFICE_INFO.primaryPhone}
               </a>
             </div>
           </div>

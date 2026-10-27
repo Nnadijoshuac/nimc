@@ -57,7 +57,7 @@ export default function App() {
       }
       if (draft.kind === "appointment") {
         setResumeNotice(
-          `Visits are now arranged by phone only. Please call ${OFFICE_INFO.primaryPhone} to book.`,
+          `That form is no longer available. Please call ${OFFICE_INFO.primaryPhone} if you need help.`,
         );
         return;
       }
@@ -155,9 +155,7 @@ export default function App() {
         )}
 
         {currentPage === "how-to-enroll" && (
-          <HowToEnrollView
-            onOpenPreEnroll={() => setIsPreEnrollOpen(true)}
-          />
+          <HowToEnrollView onOpenPreEnroll={() => setIsPreEnrollOpen(true)} />
         )}
 
         {currentPage === "faq" && <FaqView />}
@@ -183,7 +181,7 @@ export default function App() {
           className="btn-primary flex-1 py-2 px-2.5 text-xs"
         >
           <PhoneCall className="w-3.5 h-3.5 text-emerald-400" />
-          Call to book
+          Call us
         </a>
       </div>
 

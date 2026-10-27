@@ -38,7 +38,7 @@ export interface EmailTemplate {
 }
 
 const formName = (kind: Draft["kind"]) =>
-  kind === "appointment" ? "appointment booking" : "NIN pre-enrolment";
+  kind === "appointment" ? "NIN enquiry" : "NIN pre-enrolment";
 
 // ---------------------------------------------------------------------------
 // People who started but didn't finish
@@ -95,9 +95,6 @@ export function draftChatMessage(d: Draft, senderName: string) {
 // ---------------------------------------------------------------------------
 
 export function submissionEmailTemplates(s: Submission): EmailTemplate[] {
-  const visit = s.appointment_date
-    ? `${formatDate(s.appointment_date)} at ${s.appointment_time}`
-    : "[date and time]";
   return [
     {
       label: "Next steps",
@@ -107,16 +104,7 @@ export function submissionEmailTemplates(s: Submission): EmailTemplate[] {
 1. Pay the diaspora NIN fee through the official portal and keep the receipt.
 2. Visit us at 7046 Covington Highway, Suite F, Lithonia, GA 30058 with your valid Nigerian passport (or other accepted ID) and the payment receipt.
 
-We are open Monday to Friday, 9am to 5pm. Reply to this email if you would like us to book a time for you.`,
-    },
-    {
-      label: "Confirm visit",
-      subject: `Appointment confirmed · ${s.reference}`,
-      message: `Your appointment is confirmed for ${visit}.
-
-Please bring your valid Nigerian passport (or other accepted ID), your NIN payment receipt, and your reference number. Plan for about 30 minutes for biometric capture.
-
-If you need to reschedule, just reply to this email.`,
+We are open Monday to Friday, 9am to 5pm. Call us on +1 (404) 563-1228 or +1 (404) 980-6937 if you have any questions.`,
     },
     {
       label: "Missing documents",
@@ -130,9 +118,9 @@ You can reply to this email with the details, or bring them with you to the offi
     {
       label: "Reminder",
       subject: `See you soon · ${s.reference}`,
-      message: `A friendly reminder about your NIN enrolment with us${s.appointment_date ? ` on ${visit}` : ""}. Remember to bring your passport and payment receipt.
+      message: `A friendly reminder about your NIN enrolment with us. Remember to bring your passport and payment receipt.
 
-If you can no longer make it, reply and we'll find you another time.`,
+If you have any questions, call us on +1 (404) 563-1228.`,
     },
     {
       label: "Completed",

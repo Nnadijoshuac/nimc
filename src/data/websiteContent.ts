@@ -20,7 +20,7 @@ export const OFFICE_INFO: OfficeContact = {
   website: "www.ninsupportatalanta.com",
   hours: {
     weekdays: "Monday – Friday: 9:00 AM – 5:00 PM EST",
-    saturday: "Saturday: 10:00 AM – 3:00 PM EST (By phone appointment)",
+    saturday: "Saturday: 10:00 AM – 3:00 PM EST",
     sunday: "Sunday: Closed",
   },
   dpo: {
@@ -74,7 +74,7 @@ export const ENROLLMENT_STEPS: EnrollmentStep[] = [
       "Bring completed pre-enrollment form",
       "Bring printed online payment receipt",
     ],
-    tips: "Walk-ins may be accommodated during standard business hours; call ahead to book your visit and reduce waiting time.",
+    tips: "Walk-ins are welcome during standard business hours.",
     badge: "Step 3: Arrival",
   },
   {

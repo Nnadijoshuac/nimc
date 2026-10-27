@@ -223,8 +223,8 @@ export const FaqView: React.FC = () => {
             Need help before visiting?
           </h3>
           <p className="mt-1 text-sm leading-6 text-stone-700">
-            Visits are booked by phone only. Call the office to arrange your
-            in-person biometric capture.
+            Call the office with any questions before your in-person biometric
+            capture.
           </p>
         </div>
 

@@ -38,7 +38,7 @@ const servicePanels = [
     title: "Children and family visits",
     body: "Prepare minors and family groups with the right guardian documents before arriving.",
     icon: Users,
-    action: "Call to book family visit",
+    action: "Call about family visits",
   },
   {
     title: "Slip retrieval",
@@ -217,7 +217,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 className="btn-secondary px-6 py-3.5 text-sm"
               >
                 <PhoneCall className="h-4 w-4" />
-                Call to book
+                Call us
               </a>
               <button
                 onClick={() => onNavigate("how-to-enroll")}
@@ -451,7 +451,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     Monday-Friday, 9:00 AM-5:00 PM EST
                   </div>
                   <div className="text-stone-600">
-                    Saturday visits by phone arrangement only.
+                    Walk-ins are welcome during opening hours.
                   </div>
                 </div>
               </div>
@@ -476,7 +476,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               className="btn-primary mt-8 px-5 py-3 text-sm"
             >
               <PhoneCall className="h-4 w-4" />
-              Call to book your visit
+              Call the office
             </a>
           </div>
 
@@ -484,7 +484,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <div className="relative h-full min-h-[24rem] bg-stone-100">
               <img
                 src="https://images.unsplash.com/photo-1554469384-e58fac16e23a?auto=format&fit=crop&w=1400&q=85"
-                alt="Bright office waiting area for appointment visits"
+                alt="Bright office waiting area for visitors"
                 referrerPolicy="no-referrer"
                 className="h-full w-full object-cover"
               />

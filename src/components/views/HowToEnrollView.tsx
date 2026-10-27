@@ -69,7 +69,7 @@ export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
                 className="btn-secondary px-5 py-3 text-xs sm:text-sm"
               >
                 <PhoneCall className="h-4 w-4" />
-                Call to book your visit
+                Call the office
               </a>
             </div>
           </div>
@@ -101,8 +101,8 @@ export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
               you used for registration.
             </p>
             <p className="mt-1 text-xs text-stone-700">
-              Questions before your appointment? Call {OFFICE_INFO.primaryPhone}{" "}
-              and the office team will guide you.
+              Questions before your visit? Call {OFFICE_INFO.primaryPhone} and
+              the office team will guide you.
             </p>
           </div>
         </div>
@@ -111,7 +111,7 @@ export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
           className="btn-secondary shrink-0 px-4 py-2 text-xs"
         >
           <PhoneCall className="h-3.5 w-3.5" />
-          Call to book
+          Call us
         </a>
       </div>
 
@@ -203,15 +203,14 @@ export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
                         className="btn-primary w-full px-3 py-2 text-xs"
                       >
                         <PhoneCall className="h-3.5 w-3.5" />
-                        Call to book a time
+                        Call the office
                       </a>
                     )}
 
                     {![1, 3].includes(step.stepNumber) && (
                       <p className="text-xs leading-6 text-stone-600">
-                        Review this step before your appointment so the
-                        enrollment officer can process your record without
-                        delay.
+                        Review this step before your visit so the enrollment
+                        officer can process your record without delay.
                       </p>
                     )}
 
@@ -291,7 +290,7 @@ export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
             className="btn-primary px-5 py-2.5 text-xs"
           >
             <PhoneCall className="h-3.5 w-3.5" />
-            Call to book
+            Call us
           </a>
         </div>
       </section>
