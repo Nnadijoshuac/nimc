@@ -18,5 +18,5 @@
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
-  "exclude": ["node_modules", "dist", "dist-admin", "supabase/functions"]
+  "exclude": ["node_modules", "dist", "dist-admin"]
 }

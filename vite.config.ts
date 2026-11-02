@@ -2,7 +2,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "fs";
 import path from "path";
-import { defineConfig, loadEnv, type Plugin } from "vite";
+import { defineConfig, type Plugin } from "vite";
 
 /**
  * @hugeicons/core-free-icons ships an ESM barrel whose re-exports disagree with
@@ -42,47 +42,18 @@ export function hugeiconsCaseFix(): Plugin {
   };
 }
 
-/**
- * VITE_* values are baked into the JavaScript every visitor downloads. Refuse to
- * start or build if the Supabase browser key is actually a secret key
- * (service_role JWT or sb_secret_...), which would bypass all row level security.
- */
-export function assertPublicSupabaseKey(mode: string, envDir: string) {
-  const key = loadEnv(mode, envDir, "VITE_").VITE_SUPABASE_ANON_KEY ?? "";
-  let role = "";
-  if (key.startsWith("eyJ")) {
-    try {
-      role = JSON.parse(
-        Buffer.from(key.split(".")[1], "base64url").toString(),
-      ).role;
-    } catch {
-      role = "";
-    }
-  }
-  if (key.startsWith("sb_secret_") || role === "service_role") {
-    throw new Error(
-      "VITE_SUPABASE_ANON_KEY is a SECRET key (service_role / sb_secret). " +
-        "It would be exposed to every visitor. Use the anon / publishable key " +
-        "from Supabase -> Project Settings -> API Keys instead.",
-    );
-  }
-}
-
-export default defineConfig(({ mode }) => {
-  assertPublicSupabaseKey(mode, __dirname);
-  return {
-    plugins: [hugeiconsCaseFix(), react(), tailwindcss()],
-    resolve: {
-      alias: {
-        "@": path.resolve(__dirname, "."),
-      },
+export default defineConfig({
+  plugins: [hugeiconsCaseFix(), react(), tailwindcss()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "."),
     },
-    server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
-      hmr: process.env.DISABLE_HMR !== "true",
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
-      watch: process.env.DISABLE_HMR === "true" ? null : {},
-    },
-  };
+  },
+  server: {
+    // HMR is disabled in AI Studio via DISABLE_HMR env var.
+    // Do not modify—file watching is disabled to prevent flickering during agent edits.
+    hmr: process.env.DISABLE_HMR !== "true",
+    // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
+    watch: process.env.DISABLE_HMR === "true" ? null : {},
+  },
 });

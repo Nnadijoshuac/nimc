@@ -9,7 +9,3 @@ coverage/
 !.env.example
 
 .playwright-cli/
-
-# Supabase CLI local state
-supabase/.temp/
-supabase/.branches/
