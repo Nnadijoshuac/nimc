@@ -11,7 +11,6 @@ import {
 import { FAQ_ITEMS, OFFICE_INFO } from "../../data/websiteContent";
 
 export const FaqView: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({
     "what-is-nimc": true,
@@ -27,22 +26,11 @@ export const FaqView: React.FC = () => {
   ];
 
   const filteredFaqs = useMemo(() => {
-    return FAQ_ITEMS.filter((item) => {
-      const matchesCategory =
-        selectedCategory === "all" || item.category === selectedCategory;
-      const query = searchQuery.toLowerCase().trim();
-      if (!query) return matchesCategory;
-
-      const matchesSearch =
-        item.question.toLowerCase().includes(query) ||
-        item.answer.toLowerCase().includes(query) ||
-        item.bulletPoints?.some((bullet) =>
-          bullet.toLowerCase().includes(query),
-        );
-
-      return matchesCategory && matchesSearch;
-    });
-  }, [searchQuery, selectedCategory]);
+    return FAQ_ITEMS.filter(
+      (item) =>
+        selectedCategory === "all" || item.category === selectedCategory,
+    );
+  }, [selectedCategory]);
 
   const toggleItem = (id: string) => {
     setOpenItems((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -68,24 +56,8 @@ export const FaqView: React.FC = () => {
           Identification Numbers, lost slips, and diaspora enrolment procedures.
         </p>
 
-        <div className="relative mx-auto mt-6 max-w-xl">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-400" />
-          <input
-            type="text"
-            placeholder="Search by topic, e.g. lost slip or passport"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            className="field-control py-3 pl-12 pr-11 text-sm"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-stone-500 hover:text-stone-950"
-              aria-label="Clear search"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
+        <div className="mt-6 rounded-full bg-[#f5f5f7] px-4 py-3 text-xs font-semibold text-stone-600">
+          Browse by category to find the answer you need.
         </div>
       </section>
 
@@ -205,13 +177,10 @@ export const FaqView: React.FC = () => {
               enrollment.
             </p>
             <button
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedCategory("all");
-              }}
+              onClick={() => setSelectedCategory("all")}
               className="btn-primary mt-4 px-4 py-2 text-xs"
             >
-              Reset search
+              Reset filters
             </button>
           </div>
         )}

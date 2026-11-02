@@ -175,35 +175,15 @@ export const SubmissionsView: React.FC<{
             </button>
           ))}
           <span className="mx-1 hidden h-5 w-px bg-[#e5e5ea] sm:block" />
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value as StatusFilter)}
-            className="field-control w-auto px-3 py-1.5 text-xs"
-            aria-label="Filter by status"
-          >
-            <option value="open">Open (not finished)</option>
-            <option value="today">Visiting today</option>
-            <option value="all">All statuses</option>
-            {STATUSES.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </select>
+          <div className="rounded-full bg-[#eef0f4] px-3 py-1.5 text-[11px] font-semibold text-stone-700">
+            Status filters disabled
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="relative flex-1 lg:w-72 lg:flex-none">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
-            <input
-              type="search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Name, email, phone or reference"
-              className="field-control py-2 pl-9 pr-3 text-xs"
-              aria-label="Search submissions"
-            />
-          </label>
+          <div className="rounded-full bg-[#eef0f4] px-3 py-1.5 text-[11px] font-semibold text-stone-700">
+            Search disabled
+          </div>
           <button
             onClick={load}
             className="rounded-full p-2 text-stone-600 hover:bg-[#f5f5f7]"

@@ -6,12 +6,9 @@ import { HomeView } from "./components/views/HomeView";
 import { HowToEnrollView } from "./components/views/HowToEnrollView";
 import { FaqView } from "./components/views/FaqView";
 import { DataProtectionView } from "./components/views/DataProtectionView";
-import { PreEnrollmentModal } from "./components/PreEnrollmentModal";
 import { PhoneCall, Download } from "./components/icons";
 import { OFFICE_INFO } from "./data/websiteContent";
 import { installAnalytics, trackPageView } from "./lib/analytics";
-import { loadDraft } from "./lib/forms";
-import type { ResumeData } from "./components/forms/useFormJourney";
 
 const PAGE_PATHS: Record<PageId, string> = {
   home: "/",
@@ -22,11 +19,6 @@ const PAGE_PATHS: Record<PageId, string> = {
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageId>("home");
-  const [isPreEnrollOpen, setIsPreEnrollOpen] = useState(false);
-  const [resumePreEnroll, setResumePreEnroll] = useState<ResumeData | null>(
-    null,
-  );
-  const [resumeNotice, setResumeNotice] = useState<string | null>(null);
 
   // Analytics: global listeners once, a page view per page.
   useEffect(() => {
@@ -35,36 +27,6 @@ export default function App() {
   useEffect(() => {
     trackPageView(PAGE_PATHS[currentPage]);
   }, [currentPage]);
-
-  // Resume links from staff follow-up emails: /?resume=<draft id>
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const draftId = params.get("resume");
-    if (!draftId) return;
-    params.delete("resume");
-    const query = params.toString();
-    window.history.replaceState(
-      null,
-      "",
-      window.location.pathname + (query ? `?${query}` : ""),
-    );
-    loadDraft(draftId).then((draft) => {
-      if (!draft) {
-        setResumeNotice(
-          "That link has expired or the form was already submitted. You can start a new one below.",
-        );
-        return;
-      }
-      if (draft.kind === "appointment") {
-        setResumeNotice(
-          `That form is no longer available. Please call ${OFFICE_INFO.primaryPhone} if you need help.`,
-        );
-        return;
-      }
-      setResumePreEnroll({ draftId, data: draft.data });
-      setIsPreEnrollOpen(true);
-    });
-  }, []);
 
   // Accessibility State
   const [accessibilitySettings, setAccessibilitySettings] =
@@ -148,15 +110,10 @@ export default function App() {
         className="flex-1 transition-opacity duration-150"
       >
         {currentPage === "home" && (
-          <HomeView
-            onNavigate={(page) => setCurrentPage(page)}
-            onOpenPreEnroll={() => setIsPreEnrollOpen(true)}
-          />
+          <HomeView onNavigate={(page) => setCurrentPage(page)} />
         )}
 
-        {currentPage === "how-to-enroll" && (
-          <HowToEnrollView onOpenPreEnroll={() => setIsPreEnrollOpen(true)} />
-        )}
+        {currentPage === "how-to-enroll" && <HowToEnrollView />}
 
         {currentPage === "faq" && <FaqView />}
 
@@ -168,14 +125,6 @@ export default function App() {
         id="mobile-sticky-quick-bar"
         className="sm:hidden sticky bottom-0 z-40 bg-white/92 backdrop-blur-md border-t border-[#e5e5ea] px-3 py-2 flex items-center justify-between gap-2 shadow-[0_-10px_28px_rgba(29,29,31,0.08)] no-print"
       >
-        <button
-          onClick={() => setIsPreEnrollOpen(true)}
-          className="flex-1 py-2 px-2.5 rounded-full bg-[#f5f5f7] hover:bg-[#e8e8ed] text-stone-900 text-xs font-semibold flex items-center justify-center gap-1.5"
-        >
-          <Download className="w-3.5 h-3.5 text-stone-600" />
-          Pre-Enroll
-        </button>
-
         <a
           href={`tel:${OFFICE_INFO.primaryPhone}`}
           className="btn-primary flex-1 py-2 px-2.5 text-xs"
@@ -188,31 +137,6 @@ export default function App() {
       {/* Footer */}
       <Footer onNavigate={(page) => setCurrentPage(page)} />
 
-      {/* Pre-Enrollment Slip Generator Modal */}
-      <PreEnrollmentModal
-        isOpen={isPreEnrollOpen}
-        resume={resumePreEnroll}
-        onClose={() => {
-          setIsPreEnrollOpen(false);
-          setResumePreEnroll(null);
-        }}
-      />
-
-      {resumeNotice && (
-        <div
-          role="status"
-          className="fixed inset-x-3 bottom-20 z-50 mx-auto flex max-w-md items-start gap-3 rounded-xl bg-stone-950 px-4 py-3 text-xs text-white shadow-lg sm:bottom-6"
-        >
-          <p className="flex-1 leading-5">{resumeNotice}</p>
-          <button
-            onClick={() => setResumeNotice(null)}
-            className="font-semibold text-emerald-300"
-            data-no-track
-          >
-            OK
-          </button>
-        </div>
-      )}
     </div>
   );
 }

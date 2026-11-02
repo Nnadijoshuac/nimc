@@ -109,18 +109,9 @@ export const VisitorsView: React.FC<{
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <select
-            value={minStage}
-            onChange={(e) => setMinStage(Number(e.target.value))}
-            className="field-control w-auto px-3 py-1.5 text-xs"
-            aria-label="Furthest step reached"
-          >
-            <option value={0}>Everyone</option>
-            <option value={1}>Opened a form</option>
-            <option value={2}>Started typing</option>
-            <option value={3}>Left contact details</option>
-            <option value={4}>Submitted</option>
-          </select>
+          <div className="rounded-full bg-[#eef0f4] px-3 py-1.5 text-[11px] font-semibold text-stone-700">
+            Stage filter disabled
+          </div>
           <button
             onClick={load}
             className="rounded-full p-2 text-stone-600 hover:bg-[#f5f5f7]"

@@ -17,27 +17,7 @@ export const FormError: React.FC<{ message: string | null }> = ({ message }) =>
  * Off-screen field that humans never see or fill. Bots that auto-complete
  * every input trip it, and the server quietly discards the submission.
  */
-export const Honeypot: React.FC<{
-  value: string;
-  onChange: (value: string) => void;
-}> = ({ value, onChange }) => (
-  <div
-    aria-hidden="true"
-    className="absolute -left-[9999px] h-0 w-0 overflow-hidden"
-  >
-    <label>
-      Company
-      <input
-        type="text"
-        name="company"
-        tabIndex={-1}
-        autoComplete="off"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      />
-    </label>
-  </div>
-);
+export const Honeypot: React.FC<{ value: string; onChange: (value: string) => void; }> = () => null;
 
 export const Spinner: React.FC = () => (
   <span

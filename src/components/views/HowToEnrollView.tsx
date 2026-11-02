@@ -19,19 +19,7 @@ import {
   OFFICE_INFO,
 } from "../../data/websiteContent";
 
-interface HowToEnrollViewProps {
-  onOpenPreEnroll: () => void;
-}
-
-export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
-  onOpenPreEnroll,
-}) => {
-  const [checkedDocs, setCheckedDocs] = useState<Record<number, boolean>>({});
-
-  const toggleDoc = (index: number) => {
-    setCheckedDocs((prev) => ({ ...prev, [index]: !prev[index] }));
-  };
-
+export const HowToEnrollView: React.FC = () => {
   const stepIcons = [
     FileText,
     CreditCard,
@@ -57,16 +45,9 @@ export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
-              <button
-                onClick={onOpenPreEnroll}
-                className="btn-primary px-5 py-3 text-xs sm:text-sm"
-              >
-                <Download className="h-4 w-4" />
-                Fill pre-enrolment form
-              </button>
               <a
                 href={`tel:${OFFICE_INFO.primaryPhone}`}
-                className="btn-secondary px-5 py-3 text-xs sm:text-sm"
+                className="btn-primary px-5 py-3 text-xs sm:text-sm"
               >
                 <PhoneCall className="h-4 w-4" />
                 Call the office
@@ -187,16 +168,6 @@ export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
                       Step {step.stepNumber} resource
                     </div>
 
-                    {step.stepNumber === 1 && (
-                      <button
-                        onClick={onOpenPreEnroll}
-                        className="btn-primary w-full px-3 py-2 text-xs"
-                      >
-                        <Download className="h-3.5 w-3.5" />
-                        Fill and print form
-                      </button>
-                    )}
-
                     {step.stepNumber === 3 && (
                       <a
                         href={`tel:${OFFICE_INFO.primaryPhone}`}
@@ -243,41 +214,27 @@ export const HowToEnrollView: React.FC<HowToEnrollViewProps> = ({
         </div>
 
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {REQUIRED_DOCUMENTS.map((doc, idx) => {
-            const isChecked = !!checkedDocs[idx];
-            return (
-              <button
-                key={doc.title}
-                onClick={() => toggleDoc(idx)}
-                className={`flex min-h-32 items-start gap-3 border p-4 text-left ${
-                  isChecked
-                    ? "border-emerald-300 bg-emerald-50/80"
-                    : "border-[#e5e5ea] bg-[#f5f5f7] hover:border-[#c7c7cc]"
-                }`}
-              >
-                {isChecked ? (
-                  <CheckSquare className="mt-0.5 h-5 w-5 shrink-0 text-[#006b3f]" />
-                ) : (
-                  <Square className="mt-0.5 h-5 w-5 shrink-0 text-stone-500" />
-                )}
-                <span>
-                  <span
-                    className={`block text-sm font-bold ${isChecked ? "text-emerald-950 line-through" : "text-stone-950"}`}
-                  >
-                    {doc.title}
-                    {doc.required && (
-                      <span className="ml-2 rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-[#b4232a]">
-                        Required
-                      </span>
-                    )}
-                  </span>
-                  <span className="mt-1 block text-xs leading-6 text-stone-600">
-                    {doc.description}
-                  </span>
+          {REQUIRED_DOCUMENTS.map((doc) => (
+            <div
+              key={doc.title}
+              className="flex min-h-32 items-start gap-3 border border-[#e5e5ea] bg-[#f5f5f7] p-4 text-left"
+            >
+              <span className="mt-0.5 h-5 w-5 shrink-0 rounded-full bg-[#0a7a4b]/10" />
+              <span>
+                <span className="block text-sm font-bold text-stone-950">
+                  {doc.title}
+                  {doc.required && (
+                    <span className="ml-2 rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-[#b4232a]">
+                      Required
+                    </span>
+                  )}
                 </span>
-              </button>
-            );
-          })}
+                <span className="mt-1 block text-xs leading-6 text-stone-600">
+                  {doc.description}
+                </span>
+              </span>
+            </div>
+          ))}
         </div>
 
         <div className="mt-6 flex flex-col gap-4 border-t border-[#eeeeef] pt-6 text-sm text-stone-700 sm:flex-row sm:items-center sm:justify-between">

@@ -142,16 +142,9 @@ export const OverviewView: React.FC<{
               {label}
             </button>
           ))}
-          <select
-            value={kind}
-            onChange={(e) => setKind(e.target.value as typeof kind)}
-            className="field-control ml-1 w-auto px-3 py-1.5 text-xs"
-            aria-label="Form type"
-          >
-            <option value="all">All forms</option>
-            <option value="pre_enrollment">Pre-enrolment</option>
-            <option value="appointment">Appointment</option>
-          </select>
+          <div className="ml-1 rounded-full bg-[#eef0f4] px-3 py-1.5 text-[11px] font-semibold text-stone-700">
+            Form filter disabled
+          </div>
         </div>
         <div className="flex items-center gap-3">
           {t && (

@@ -150,27 +150,9 @@ export const LeadsView: React.FC<{
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <select
-            value={kind}
-            onChange={(e) => setKind(e.target.value as typeof kind)}
-            className="field-control w-auto px-3 py-1.5 text-xs"
-            aria-label="Form type"
-          >
-            <option value="all">All forms</option>
-            <option value="pre_enrollment">Pre-enrolment</option>
-            <option value="appointment">Appointment</option>
-          </select>
-          <label className="relative flex-1 lg:w-64 lg:flex-none">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
-            <input
-              type="search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Name, email or phone"
-              className="field-control py-2 pl-9 pr-3 text-xs"
-              aria-label="Search leads"
-            />
-          </label>
+          <div className="rounded-full bg-[#eef0f4] px-3 py-1.5 text-[11px] font-semibold text-stone-700">
+            Filters are disabled
+          </div>
           <button
             onClick={() => {
               load();

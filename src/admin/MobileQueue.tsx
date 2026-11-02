@@ -137,27 +137,9 @@ function Toolbar<K extends string>({
   return (
     <div className="sticky top-14 z-20 -mx-4 bg-[#e4e7ec]/95 px-4 pb-3 pt-3 backdrop-blur">
       {searching ? (
-        <label className="relative block">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
-          <input
-            autoFocus
-            type="search"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder={placeholder}
-            className="field-control bg-white py-3 pl-9 pr-11 text-base"
-          />
-          <button
-            onClick={() => {
-              setSearchInput("");
-              setSearching(false);
-            }}
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full p-2 text-stone-600"
-            aria-label="Close search"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </label>
+        <div className="rounded-xl bg-white px-3 py-3 text-sm font-semibold text-stone-700">
+          Search is disabled in this build.
+        </div>
       ) : (
         <div className="flex items-center gap-2">
           <div className="admin-scroll-row admin-fade-end flex min-w-0 flex-1 gap-2 overflow-x-auto pr-6">

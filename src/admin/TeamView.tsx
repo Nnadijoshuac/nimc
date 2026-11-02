@@ -204,16 +204,12 @@ export const TeamView: React.FC<{
       )}
 
       {owner && (
-        <InviteForm
-          busy={busy === "invite"}
-          onInvite={(name, email, role) =>
-            act(
-              "invite",
-              { action: "invite", name, email, role },
-              `Invite sent to ${email}.`,
-            )
-          }
-        />
+        <section className="paper-panel p-4 md:p-5">
+          <SectionTitle>Invite someone</SectionTitle>
+          <p className="text-sm text-stone-600">
+            Invitations are disabled in this build.
+          </p>
+        </section>
       )}
 
       {/* Members */}
@@ -269,31 +265,9 @@ export const TeamView: React.FC<{
 
                   {owner && !isMe && (
                     <div className="flex shrink-0 items-center gap-2">
-                      <select
-                        value={m.role}
-                        disabled={busy !== null || lastOwner}
-                        onChange={(e) =>
-                          act(
-                            `role-${m.user_id}`,
-                            {
-                              action: "set_role",
-                              userId: m.user_id,
-                              role: e.target.value,
-                            },
-                            `${m.full_name || m.email} is now ${e.target.value === "owner" ? "an owner" : "staff"}.`,
-                          )
-                        }
-                        className="field-control w-auto px-3 py-2 text-xs"
-                        aria-label={`Role for ${m.email}`}
-                        title={
-                          lastOwner
-                            ? "The last owner can't be demoted"
-                            : undefined
-                        }
-                      >
-                        <option value="staff">Staff</option>
-                        <option value="owner">Owner</option>
-                      </select>
+                      <div className="rounded-full bg-[#eef0f4] px-3 py-1.5 text-[11px] font-semibold text-stone-700">
+                        {m.role === "owner" ? "Owner" : "Staff"}
+                      </div>
                       <button
                         disabled={busy !== null || lastOwner}
                         onClick={() => {
@@ -378,15 +352,9 @@ const RequestCard: React.FC<{
         </p>
       )}
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value as Role)}
-          className="field-control w-auto bg-white px-3 py-2.5 text-sm"
-          aria-label="Role"
-        >
-          <option value="staff">As staff</option>
-          <option value="owner">As owner</option>
-        </select>
+        <div className="rounded-full bg-white px-3 py-2 text-sm font-semibold text-stone-700">
+          As {role}
+        </div>
         <button
           disabled={busy !== null}
           onClick={() => onApprove(role)}
@@ -413,72 +381,9 @@ const RequestCard: React.FC<{
   );
 };
 
-const InviteForm: React.FC<{
-  busy: boolean;
-  onInvite: (name: string, email: string, role: Role) => Promise<void>;
-}> = ({ busy, onInvite }) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState<Role>("staff");
-
-  return (
-    <section className="paper-panel p-4 md:p-5">
-      <SectionTitle>Invite someone</SectionTitle>
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          await onInvite(name.trim(), email.trim(), role);
-          setName("");
-          setEmail("");
-          setRole("staff");
-        }}
-        className="grid gap-3 md:grid-cols-[1fr_1.3fr_auto_auto] md:items-end"
-      >
-        <label className="block text-xs font-bold text-stone-700">
-          Name
-          <input
-            required
-            maxLength={80}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="field-control mt-1 px-3 py-2.5 text-sm"
-          />
-        </label>
-        <label className="block text-xs font-bold text-stone-700">
-          Email
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="field-control mt-1 px-3 py-2.5 text-sm"
-          />
-        </label>
-        <label className="block text-xs font-bold text-stone-700">
-          Role
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value as Role)}
-            className="field-control mt-1 px-3 py-2.5 text-sm"
-          >
-            <option value="staff">Staff</option>
-            <option value="owner">Owner</option>
-          </select>
-        </label>
-        <button
-          type="submit"
-          disabled={busy}
-          className="btn-primary px-5 py-3 text-sm disabled:opacity-60 md:py-2.5"
-        >
-          {busy ? <Spinner /> : <Mail className="h-4 w-4" />}
-          Send invite
-        </button>
-      </form>
-      <p className="mt-2 flex items-center gap-1.5 text-[11px] text-stone-500">
-        <Users className="h-3.5 w-3.5" />
-        They get an email from NIN Support Atlanta and choose their own
-        password.
-      </p>
-    </section>
-  );
-};
+const InviteForm: React.FC = () => (
+  <section className="paper-panel p-4 md:p-5">
+    <SectionTitle>Invite someone</SectionTitle>
+    <p className="text-sm text-stone-600">Invitation fields have been removed.</p>
+  </section>
+);

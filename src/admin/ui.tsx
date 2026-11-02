@@ -388,13 +388,9 @@ export const Composer: React.FC<{
 
       {tab === "note" ? (
         <div className="space-y-2">
-          <textarea
-            rows={3}
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Internal note, e.g. called, will visit Friday with passport. Only staff see this."
-            className="field-control px-3 py-2 text-sm"
-          />
+          <div className="rounded-lg bg-[#eef0f4] px-3 py-2 text-sm text-stone-700">
+            Notes are disabled in this build.
+          </div>
           <div className="flex justify-end">
             <button
               onClick={addNote}
@@ -407,37 +403,8 @@ export const Composer: React.FC<{
         </div>
       ) : (
         <div className="space-y-2">
-          <div className="flex flex-wrap gap-1.5">
-            {templates.map((t) => (
-              <button
-                key={t.label}
-                onClick={() => {
-                  setSubject(t.subject);
-                  setMessage(t.message);
-                }}
-                className="rounded-full bg-[#eef0f4] px-3 py-1.5 text-xs font-semibold text-stone-800 hover:bg-[#e2e6ec] md:px-2.5 md:py-1 md:text-[11px]"
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-          <input
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            placeholder="Subject"
-            maxLength={150}
-            className="field-control px-3 py-2 text-sm"
-          />
-          <div className="rounded-lg bg-[#eef0f4] px-3 pt-2 text-sm text-stone-500">
-            Hello {greetingName || "there"},
-            <textarea
-              rows={8}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Pick a template above or write your message. Your name and signature are added automatically."
-              maxLength={5000}
-              className="mt-1 block w-full resize-y border-0 bg-transparent p-0 pb-2 text-sm text-stone-900 outline-none"
-            />
+          <div className="rounded-lg bg-[#eef0f4] px-3 py-2 text-sm text-stone-700">
+            Email composer is disabled in this build.
           </div>
           <div className="flex flex-col-reverse gap-2 md:flex-row md:items-center md:justify-between">
             <span className="text-[11px] text-stone-500">
@@ -524,23 +491,9 @@ export function Workflow<T extends string>({
           </button>
         </div>
       ) : (
-        <label className="mt-3 flex items-center gap-2 text-xs text-stone-600">
-          Assigned to
-          <select
-            value={assignedTo ?? ""}
-            disabled={saving}
-            onChange={(e) => onChange({ assigned_to: e.target.value || null })}
-            className="field-control w-auto px-2 py-1 text-xs"
-          >
-            <option value="">Unassigned</option>
-            {admins.map((a) => (
-              <option key={a.user_id} value={a.user_id}>
-                {a.full_name || a.email}
-                {a.user_id === session.user.id ? " (me)" : ""}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="mt-3 text-xs text-stone-600">
+          Assigned to {assignedTo ? adminName(assignedTo) : "Unassigned"}
+        </div>
       )}
     </section>
   );

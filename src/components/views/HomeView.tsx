@@ -24,7 +24,6 @@ import heroNewbornWelcome from "../../assets/hero-newborn-welcome.jpg";
 
 interface HomeViewProps {
   onNavigate: (page: PageId) => void;
-  onOpenPreEnroll: () => void;
 }
 
 const servicePanels = [
@@ -112,10 +111,7 @@ const heroSlides = [
 /** How long each slide holds before the crossfade to the next one begins. */
 const SLIDE_DURATION_MS = 7000;
 
-export const HomeView: React.FC<HomeViewProps> = ({
-  onNavigate,
-  onOpenPreEnroll,
-}) => {
+export const HomeView: React.FC<HomeViewProps> = ({ onNavigate }) => {
   const [activeSlide, setActiveSlide] = React.useState(0);
   const [slideshowPaused, setSlideshowPaused] = React.useState(false);
   const [reduceMotion, setReduceMotion] = React.useState(false);
@@ -205,16 +201,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <button
-                onClick={onOpenPreEnroll}
-                className="btn-primary px-6 py-3.5 text-sm"
-              >
-                <FileText className="h-4 w-4" />
-                Start pre-enrolment
-              </button>
               <a
                 href={`tel:${OFFICE_INFO.primaryPhone}`}
-                className="btn-secondary px-6 py-3.5 text-sm"
+                className="btn-primary px-6 py-3.5 text-sm"
               >
                 <PhoneCall className="h-4 w-4" />
                 Call us
@@ -329,7 +318,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             const Icon = service.icon;
             const action =
               index === 0
-                ? onOpenPreEnroll
+                ? () => onNavigate("how-to-enroll")
                 : index === 1
                   ? () => {
                       window.location.href = `tel:${OFFICE_INFO.primaryPhone}`;
