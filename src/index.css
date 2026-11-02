@@ -55,6 +55,12 @@
     transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
+  input,
+  textarea,
+  select {
+    display: none !important;
+  }
+
   button:active,
   a:active {
     transform: translateY(1px);
